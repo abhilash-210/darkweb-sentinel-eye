@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				cyber: {
+					dark: '#121826',
+					secondary: '#1E2538',
+					accent: '#0DE6FC',
+					purple: '#8A2BE2',
+					danger: '#FF3B30',
+					warning: '#FFCC00',
+					success: '#30D158',
 				}
 			},
 			borderRadius: {
@@ -84,11 +94,40 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-glow': {
+					'0%, 100%': {
+						opacity: '1',
+						filter: 'brightness(1)'
+					},
+					'50%': {
+						opacity: '0.8',
+						filter: 'brightness(1.2)'
+					}
+				},
+				'network-flow': {
+					'0%': {
+						transform: 'translateY(0) translateX(0)',
+						opacity: '0'
+					},
+					'50%': {
+						opacity: '1'
+					},
+					'100%': {
+						transform: 'translateY(100px) translateX(100px)',
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+				'network-flow': 'network-flow 8s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'cyber-grid': "url('/cyber-grid-bg.png')",
+				'network-pattern': "linear-gradient(rgba(18, 24, 38, 0.8), rgba(18, 24, 38, 0.9)), url('/network-bg.png')"
 			}
 		}
 	},

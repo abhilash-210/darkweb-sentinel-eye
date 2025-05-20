@@ -1,73 +1,112 @@
-# Welcome to your Lovable project
 
-## Project info
+# PhishGuard - Phishing Link Detector
 
-**URL**: https://lovable.dev/projects/57ab7c39-9bba-45be-aa54-ec9672126029
+![PhishGuard](https://img.shields.io/badge/PhishGuard-Cyber%20Security-blue)
 
-## How can I edit this code?
+PhishGuard is a sophisticated web-based cybersecurity tool designed to detect and analyze potential phishing links. The application provides real-time scanning of URLs to identify threats and security vulnerabilities, helping users stay protected against online scams and phishing attempts.
 
-There are several ways of editing your application.
+## 🔒 Features
 
-**Use Lovable**
+- **URL Threat Detection**: Analyze URLs for phishing attempts and security risks
+- **Security Scoring**: Get a safety score out of 100 for any analyzed URL
+- **Threat Identification**: Detailed breakdown of detected security issues
+- **Domain Analysis**: Information about domain age, SSL status, and redirects
+- **User Authentication**: Secure login and registration system
+- **Responsive Interface**: Professional dark-themed UI optimized for all devices
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/57ab7c39-9bba-45be-aa54-ec9672126029) and start prompting.
+## 🛠️ Technology Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: React, TypeScript, TailwindCSS, shadcn/ui
+- **State Management**: React Context API, React Query
+- **Authentication**: Supabase Auth (implementation ready)
+- **Styling**: Custom cybersecurity-themed UI with animations
+- **Notifications**: Toast notifications for user feedback
 
-**Use your preferred IDE**
+## 🚀 Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js (v14.0 or higher)
+- npm or yarn
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/phishguard.git
+   cd phishguard
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. Start the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+4. Open your browser and navigate to `http://localhost:8080`
 
-**Edit a file directly in GitHub**
+## 🔧 Supabase Integration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+PhishGuard is designed to work with Supabase for authentication and data storage. To connect your Supabase database:
 
-**Use GitHub Codespaces**
+1. Create a Supabase project at [https://supabase.com](https://supabase.com)
+2. Set up authentication in your Supabase project
+3. Connect your Supabase project to PhishGuard:
+   - Click on the Supabase button in the Lovable interface
+   - Connect to your Supabase project
+   - Follow the integration steps
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Database Schema
 
-## What technologies are used for this project?
+Create the following tables in your Supabase project:
 
-This project is built with:
+**Users Table** (handled automatically by Supabase Auth)
+- id: uuid (primary key)
+- email: text
+- created_at: timestamp
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+**Scan History Table**
+- id: uuid (primary key)
+- user_id: uuid (foreign key to users.id)
+- url: text
+- score: integer
+- threats: json
+- scanned_at: timestamp
 
-## How can I deploy this project?
+## 📱 Interface
 
-Simply open [Lovable](https://lovable.dev/projects/57ab7c39-9bba-45be-aa54-ec9672126029) and click on Share -> Publish.
+PhishGuard features a professional dark-themed interface designed specifically for cybersecurity applications:
 
-## Can I connect a custom domain to my Lovable project?
+- **Login/Register**: Secure authentication screens
+- **Dashboard**: URL scanning interface with real-time analysis
+- **Results View**: Detailed breakdown of scan results with visual indicators
+- **Mobile Responsive**: Fully functional on all device sizes
 
-Yes, you can!
+## 🔐 Security Notes
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- All URL scanning is performed securely
+- No sensitive user data is stored
+- Password requirements enforce strong security practices
+- The application includes anti-phishing education elements
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgements
+
+- Icons by [Lucide](https://lucide.dev/)
+- UI Components by [shadcn/ui](https://ui.shadcn.com/)
+- Developed with [Lovable](https://lovable.dev/)
+
+---
+
+© 2025 PhishGuard | Secure Link Analysis Tool
