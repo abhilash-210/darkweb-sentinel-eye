@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Search, Link as LinkIcon, AlertTriangle, LogOut, Check, Database, Network, Lock } from 'lucide-react';
+import { Shield, Search, Link as LinkIcon, AlertTriangle, LogOut, Check, Network, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,13 @@ const analyzeUrl = (url: string) => {
       registered: string;
       ssl: boolean;
       redirects: number;
+    },
+    analysis: {
+      domainAge: string;
+      sslCertificate: string;
+      redirectChain: string;
+      contentSafety: string;
+      phishingPatterns: string;
     }
   }>((resolve) => {
     // Simulate API call delay
@@ -83,6 +90,15 @@ const analyzeUrl = (url: string) => {
       // Ensure score is within bounds
       score = Math.max(0, Math.min(100, score));
 
+      // Generate detailed analysis
+      const analysis = {
+        domainAge: score < 50 ? 'Domain registered recently (high risk)' : 'Domain has been established for years (low risk)',
+        sslCertificate: score > 40 ? 'Valid SSL certificate present (low risk)' : 'Missing or invalid SSL certificate (high risk)',
+        redirectChain: score < 50 ? 'Multiple suspicious redirects detected (high risk)' : 'No suspicious redirects (low risk)',
+        contentSafety: score < 60 ? 'Potential malicious content detected (medium risk)' : 'No suspicious content detected (low risk)',
+        phishingPatterns: score < 70 ? 'Contains known phishing patterns (high risk)' : 'No known phishing patterns (low risk)',
+      };
+
       resolve({
         score,
         threats,
@@ -92,7 +108,8 @@ const analyzeUrl = (url: string) => {
           registered: score < 50 ? '2023-04-15' : '2010-06-22',
           ssl: score > 40,
           redirects: score < 50 ? Math.floor(Math.random() * 3) + 1 : 0,
-        }
+        },
+        analysis
       });
     }, 1500);
   });
@@ -101,6 +118,7 @@ const analyzeUrl = (url: string) => {
 const Dashboard = () => {
   const [url, setUrl] = useState('');
   const [scanning, setScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
   const [scanResult, setScanResult] = useState<ReturnType<typeof analyzeUrl> extends Promise<infer T> ? T | null : never>(null);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
@@ -164,11 +182,24 @@ const Dashboard = () => {
       }
       
       setScanning(true);
+      setScanProgress(0);
       toast.info('Scanning URL for threats...');
+      
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setScanProgress(prev => {
+          const newProgress = prev + Math.random() * 20;
+          return newProgress >= 90 ? 90 : newProgress;
+        });
+      }, 300);
       
       // Call our enhanced analysis function
       const result = await analyzeUrl(formattedUrl);
       setScanResult(result);
+      
+      // Complete progress
+      clearInterval(progressInterval);
+      setScanProgress(100);
       
       // Store scan result in Supabase
       const { error } = await supabase
@@ -201,6 +232,7 @@ const Dashboard = () => {
   const resetScan = () => {
     setUrl('');
     setScanResult(null);
+    setScanProgress(0);
   };
 
   const getScoreColor = (score: number) => {
@@ -222,7 +254,7 @@ const Dashboard = () => {
         <div className="container mx-auto py-4 px-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Shield className="h-6 w-6 text-cyber-accent" />
-            <h1 className="text-xl font-bold text-white">PhishGuard</h1>
+            <h1 className="text-xl font-bold text-white">CyberSentry</h1>
           </div>
           
           <div className="flex items-center gap-3">
@@ -248,13 +280,21 @@ const Dashboard = () => {
             Advanced <span className="text-cyber-accent">Threat</span> Detection
           </h1>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Enter any suspicious URL to analyze it for potential phishing threats.
-            Our AI-powered engine will scan for attack patterns and security vulnerabilities.
+            Enter any suspicious URL to analyze it for potential security threats.
+            Our AI-powered engine will scan for attack patterns and vulnerabilities.
           </p>
         </div>
         
         <div className="max-w-3xl mx-auto">
-          <form onSubmit={handleScan} className="cyber-card p-6 mb-8 border border-cyber-accent/30">
+          <form onSubmit={handleScan} className="cyber-card p-6 mb-8 border border-cyber-accent/30 relative overflow-hidden">
+            {/* Animated scan line effect */}
+            {scanning && (
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="w-full h-2 bg-gradient-to-r from-transparent via-cyber-accent/40 to-transparent absolute top-0 left-0" 
+                     style={{ animation: 'scan-line 2s infinite linear' }}></div>
+              </div>
+            )}
+            
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -283,6 +323,33 @@ const Dashboard = () => {
                 <span>{scanning ? 'Scanning...' : 'Scan URL'}</span>
               </Button>
             </div>
+            
+            {scanning && (
+              <div className="mt-4">
+                <div className="flex justify-between text-xs text-gray-400 mb-1">
+                  <span>Scanning for threats...</span>
+                  <span>{Math.round(scanProgress)}%</span>
+                </div>
+                <Progress value={scanProgress} className="h-1 bg-cyber-dark" 
+                  indicatorClassName="bg-gradient-to-r from-cyber-accent/50 to-cyber-accent" />
+                
+                <div className="grid grid-cols-4 gap-2 mt-4">
+                  {Array.from({length: 4}).map((_, i) => (
+                    <div key={i} className="h-1 bg-cyber-accent/30 rounded-full animate-pulse" 
+                         style={{ animationDelay: `${i * 0.2}s` }}></div>
+                  ))}
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {['Checking domain', 'Analyzing content', 'Verifying SSL', 'Scanning redirects'].map((step, i) => (
+                    <div key={i} className="text-xs bg-cyber-accent/10 border border-cyber-accent/20 px-2 py-1 rounded-md text-cyber-accent/70"
+                         style={{ animationDelay: `${i * 0.5}s`, opacity: scanProgress > i * 25 ? 1 : 0.3 }}>
+                      {step}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </form>
           
           {scanResult && (
@@ -346,10 +413,32 @@ const Dashboard = () => {
                       </div>
                     </div>
                     
+                    {/* New detailed analysis section */}
+                    <div className="mt-6">
+                      <h4 className="text-white font-medium mb-2 flex items-center gap-2">
+                        <Network className="h-4 w-4 text-cyber-accent" /> Detailed Analysis
+                      </h4>
+                      
+                      <div className="space-y-2">
+                        {Object.entries(scanResult.analysis).map(([key, value]) => (
+                          <div key={key} className="bg-cyber-dark/60 p-2 rounded border border-cyber-accent/10">
+                            <div className="flex justify-between items-center">
+                              <p className="text-xs text-gray-400">{key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}</p>
+                              <div className={`h-2 w-2 rounded-full ${value.toLowerCase().includes('high') ? 'bg-cyber-danger' : 
+                                value.toLowerCase().includes('medium') ? 'bg-cyber-warning' : 'bg-cyber-success'}`}></div>
+                            </div>
+                            <p className="text-sm text-white">{value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
                     {scanResult.threats.length > 0 && (
-                      <div>
-                        <span className="text-sm text-gray-400">Detected Threats:</span>
-                        <ul className="mt-1 space-y-1">
+                      <div className="mt-4">
+                        <h4 className="text-white font-medium mb-2 flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4 text-cyber-danger" /> Detected Threats
+                        </h4>
+                        <ul className="space-y-1">
                           {scanResult.threats.map((threat, index) => (
                             <li key={index} className="bg-cyber-danger/10 text-cyber-danger text-sm p-2 rounded flex items-center gap-2 border border-cyber-danger/20">
                               <AlertTriangle className="h-4 w-4" />
@@ -359,6 +448,29 @@ const Dashboard = () => {
                         </ul>
                       </div>
                     )}
+                    
+                    {/* Safety recommendation */}
+                    <div className={`mt-6 p-3 rounded-md border ${scanResult.isSafe ? 
+                      'bg-cyber-success/10 border-cyber-success/30 text-cyber-success' : 
+                      'bg-cyber-danger/10 border-cyber-danger/30 text-cyber-danger'}`}>
+                      <h4 className="font-medium flex items-center gap-2 mb-1">
+                        {scanResult.isSafe ? (
+                          <>
+                            <Lock className="h-4 w-4" /> Safe to Proceed
+                          </>
+                        ) : (
+                          <>
+                            <AlertTriangle className="h-4 w-4" /> Warning: Potential Threat
+                          </>
+                        )}
+                      </h4>
+                      <p className="text-sm">
+                        {scanResult.isSafe ? 
+                          `This URL appears to be safe based on our analysis. You can visit this site with normal precautions.` : 
+                          `Exercise extreme caution with this URL. It shows multiple warning signs associated with phishing or malicious websites.`
+                        }
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -405,26 +517,13 @@ const Dashboard = () => {
               </p>
             </Card>
           </div>
-
-          <div className="cyber-card p-6 mt-12 border border-cyber-accent/20">
-            <div className="flex items-center mb-4">
-              <Database className="h-5 w-5 text-cyber-accent mr-2" />
-              <h3 className="text-xl font-bold text-white">Scan History</h3>
-            </div>
-            <p className="text-gray-400 mb-4 text-sm">
-              PhishGuard securely stores your scan history, helping you track potential threats over time.
-            </p>
-            <div className="text-center p-6 border border-dashed border-gray-700 rounded">
-              <p className="text-gray-500">Your scan history will appear here</p>
-            </div>
-          </div>
         </div>
       </main>
       
       <footer className="border-t border-cyber-accent/10 py-6 mt-20">
         <div className="container mx-auto px-4 text-center">
           <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} PhishGuard | Secure Link Analysis Tool
+            © {new Date().getFullYear()} CyberSentry | Secure Link Analysis Tool
           </p>
         </div>
       </footer>
