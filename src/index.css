@@ -5,39 +5,39 @@
 
 @layer base {
   :root {
-    --background: 225 24% 9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
 
-    --card: 225 24% 9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 225 24% 9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 191 99% 52%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 142 70% 50%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 142 70% 50%;
+    --accent-foreground: 0 0% 0%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 191 99% 52%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 142 70% 50%;
     
     --radius: 0.5rem;
     
-    --cyber-dark: #0d1117;
-    --cyber-secondary: #161b22;
-    --cyber-accent: #0DE6FC;
+    --cyber-dark: #000000;
+    --cyber-secondary: #0a0a0a;
+    --cyber-accent: #00FF66;
     --cyber-purple: #8A2BE2;
     --cyber-success: #00E676;
     --cyber-warning: #FFD600;
@@ -53,8 +53,8 @@
   body {
     @apply bg-cyber-dark text-foreground;
     background-image: 
-      radial-gradient(circle at 50% 50%, rgba(13, 230, 252, 0.05) 0%, rgba(18, 24, 38, 0) 50%),
-      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230de6fc' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      radial-gradient(circle at 50% 50%, rgba(0, 255, 102, 0.05) 0%, rgba(0, 0, 0, 0) 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300ff66' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
 
   input::placeholder {
@@ -101,7 +101,7 @@
 
 .cyber-card {
   @apply bg-cyber-secondary/80 backdrop-blur-sm border border-cyber-accent/20 rounded-md overflow-hidden;
-  box-shadow: 0 0 15px rgba(13, 230, 252, 0.15);
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.15);
   position: relative;
 }
 
@@ -114,9 +114,9 @@
   height: 1px;
   background: linear-gradient(90deg, 
     transparent 0%, 
-    rgba(13, 230, 252, 0.2) 15%, 
-    rgba(13, 230, 252, 0.4) 50%,
-    rgba(13, 230, 252, 0.2) 85%, 
+    rgba(0, 255, 102, 0.2) 15%, 
+    rgba(0, 255, 102, 0.4) 50%,
+    rgba(0, 255, 102, 0.2) 85%, 
     transparent 100%);
 }
 
@@ -125,8 +125,8 @@
 }
 
 .cyber-button {
-  @apply px-6 py-2 rounded-md bg-gradient-to-r from-cyber-accent to-cyber-purple text-black font-medium transition-all;
-  box-shadow: 0 0 15px rgba(13, 230, 252, 0.4);
+  @apply px-6 py-2 rounded-md bg-gradient-to-r from-cyber-accent to-green-700 text-black font-medium transition-all;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
   position: relative;
   overflow: hidden;
 }
@@ -147,8 +147,8 @@
 }
 
 .cyber-button:hover {
-  @apply from-cyber-purple to-cyber-accent;
-  box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
+  @apply from-green-700 to-cyber-accent;
+  box-shadow: 0 0 20px rgba(0, 255, 102, 0.6);
 }
 
 .cyber-button:hover::after {
@@ -166,8 +166,8 @@
   top: 0;
   left: 0;
   background-image: 
-    linear-gradient(90deg, rgba(13, 230, 252, 0.03) 1px, transparent 1px),
-    linear-gradient(rgba(13, 230, 252, 0.03) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(0, 255, 102, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(0, 255, 102, 0.03) 1px, transparent 1px);
   background-size: 30px 30px;
 }
 
@@ -182,7 +182,7 @@
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, #0DE6FC, #8A2BE2, #0DE6FC);
+  background: linear-gradient(45deg, #00FF66, #006633, #00FF66);
   z-index: -1;
   border-radius: 0.6rem;
   animation: glowing 3s ease-in-out infinite;
@@ -207,7 +207,7 @@
   border-radius: 50%;
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(13, 230, 252, 0.2);
+  border: 2px solid rgba(0, 255, 102, 0.2);
 }
 
 .score-gauge-fill {
@@ -230,7 +230,7 @@
     repeating-linear-gradient(
       0deg,
       transparent,
-      rgba(13, 230, 252, 0.05) 1px,
+      rgba(0, 255, 102, 0.05) 1px,
       transparent 2px,
       transparent 10px
     );

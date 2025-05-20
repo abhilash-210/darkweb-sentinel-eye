@@ -37,11 +37,16 @@ const Login = () => {
       });
 
       if (error) {
-        throw error;
+        // Check for email confirmation error
+        if (error.message.includes('Email not confirmed')) {
+          toast.error('Please verify your email before logging in. Check your inbox for a confirmation link.');
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success('Login successful! Redirecting to dashboard...');
+        navigate('/dashboard');
       }
-
-      toast.success('Login successful! Redirecting to dashboard...');
-      navigate('/dashboard');
     } catch (error: any) {
       toast.error(`Login failed: ${error.message}`);
     } finally {
@@ -50,19 +55,19 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-cyber-dark p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black p-4">
       <div className="absolute inset-0 network-lines opacity-20"></div>
       
       <div className="cyber-card w-full max-w-md p-8 z-10">
         <div className="flex justify-center mb-6">
-          <Shield className="h-12 w-12 text-cyber-accent animate-pulse-glow" />
+          <Shield className="h-12 w-12 text-green-500 animate-pulse-glow" />
         </div>
         
         <h1 className="text-3xl font-bold text-center mb-2 text-white">
-          Secure <span className="text-cyber-accent">Login</span>
+          Secure <span className="text-green-500">Login</span>
         </h1>
         <p className="text-gray-400 text-center mb-8">
-          Access your PhishGuard dashboard
+          Access your CyberSentry dashboard
         </p>
         
         <form onSubmit={handleLogin} className="space-y-6">
@@ -86,7 +91,7 @@ const Login = () => {
               <label htmlFor="password" className="text-sm font-medium text-gray-300">
                 Password
               </label>
-              <a href="#" className="text-sm text-cyber-accent hover:text-cyber-purple">
+              <a href="#" className="text-sm text-green-500 hover:text-green-400">
                 Forgot password?
               </a>
             </div>
@@ -122,22 +127,22 @@ const Login = () => {
         <div className="mt-8 text-center">
           <div className="text-sm text-gray-400">
             Don't have an account?{' '}
-            <Link to="/register" className="text-cyber-accent hover:text-cyber-purple">
+            <Link to="/register" className="text-green-500 hover:text-green-400">
               Create an account
             </Link>
           </div>
         </div>
         
-        <div className="mt-6 p-4 bg-cyber-dark/80 rounded border border-cyber-accent/10 flex items-center gap-3">
-          <AlertTriangle className="h-5 w-5 text-cyber-warning flex-shrink-0" />
+        <div className="mt-6 p-4 bg-black/80 rounded border border-green-500/10 flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
           <p className="text-xs text-gray-400">
-            Always ensure you're on the official PhishGuard domain before entering credentials.
+            Always ensure you're on the official CyberSentry domain before entering credentials.
           </p>
         </div>
       </div>
       
       <div className="mt-8 text-gray-500 text-xs">
-        © {new Date().getFullYear()} PhishGuard | Secure Link Analysis Tool
+        © {new Date().getFullYear()} CyberSentry | Secure URL Analysis Tool
       </div>
     </div>
   );

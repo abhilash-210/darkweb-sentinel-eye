@@ -53,7 +53,7 @@ const Register = () => {
         throw error;
       }
 
-      toast.success('Registration successful! Please verify your email.');
+      toast.success('Registration successful! Please check your email for verification.');
       navigate('/login');
     } catch (error: any) {
       toast.error(`Registration failed: ${error.message}`);
@@ -63,19 +63,19 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-cyber-dark p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black p-4">
       <div className="absolute inset-0 network-lines opacity-20"></div>
       
       <div className="cyber-card w-full max-w-md p-8 z-10">
         <div className="flex justify-center mb-6">
-          <Shield className="h-12 w-12 text-cyber-accent animate-pulse-glow" />
+          <Shield className="h-12 w-12 text-green-500 animate-pulse-glow" />
         </div>
         
         <h1 className="text-3xl font-bold text-center mb-2 text-white">
-          Create <span className="text-cyber-accent">Account</span>
+          Create <span className="text-green-500">Account</span>
         </h1>
         <p className="text-gray-400 text-center mb-8">
-          Join PhishGuard to protect against online threats
+          Join CyberSentry to protect against online threats
         </p>
         
         <form onSubmit={handleRegister} className="space-y-6">
@@ -132,10 +132,10 @@ const Register = () => {
               id="terms" 
               checked={acceptTerms}
               onCheckedChange={() => setAcceptTerms(!acceptTerms)}
-              className="mt-1 bg-cyber-dark border-cyber-accent/50 data-[state=checked]:bg-cyber-accent data-[state=checked]:text-black"
+              className="mt-1 bg-black border-green-500/50 data-[state=checked]:bg-green-500 data-[state=checked]:text-black"
             />
             <label htmlFor="terms" className="text-sm text-gray-400">
-              I accept the <a href="#" className="text-cyber-accent hover:text-cyber-purple">Terms of Service</a> and <a href="#" className="text-cyber-accent hover:text-cyber-purple">Privacy Policy</a>
+              I accept the <a href="#" className="text-green-500 hover:text-green-400">Terms of Service</a> and <a href="#" className="text-green-500 hover:text-green-400">Privacy Policy</a>
             </label>
           </div>
           
@@ -160,14 +160,14 @@ const Register = () => {
         <div className="mt-8 text-center">
           <div className="text-sm text-gray-400">
             Already have an account?{' '}
-            <Link to="/login" className="text-cyber-accent hover:text-cyber-purple">
+            <Link to="/login" className="text-green-500 hover:text-green-400">
               Sign in
             </Link>
           </div>
         </div>
         
-        <div className="mt-6 p-4 bg-cyber-dark/80 rounded border border-cyber-accent/10 flex items-center gap-3">
-          <AlertTriangle className="h-5 w-5 text-cyber-warning flex-shrink-0" />
+        <div className="mt-6 p-4 bg-black/80 rounded border border-green-500/10 flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
           <p className="text-xs text-gray-400">
             Your data is encrypted and protected using industry-standard security protocols.
           </p>
@@ -175,7 +175,7 @@ const Register = () => {
       </div>
       
       <div className="mt-8 text-gray-500 text-xs">
-        © {new Date().getFullYear()} PhishGuard | Secure Link Analysis Tool
+        © {new Date().getFullYear()} CyberSentry | Secure URL Analysis Tool
       </div>
     </div>
   );
