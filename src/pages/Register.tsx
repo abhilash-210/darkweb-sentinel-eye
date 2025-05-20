@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, AlertTriangle, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { supabase } from "@/integrations/supabase/client";
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,18 @@ const Register = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/dashboard');
+      }
+    };
+    
+    checkSession();
+  }, [navigate]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,25 +43,23 @@ const Register = () => {
     
     setLoading(true);
     
-    // This is just a placeholder. In a real app, you would connect to Supabase
-    // for authentication. This simulates a successful registration for demo purposes.
-    setTimeout(() => {
-      toast.success('Registration successful! Please log in.');
-      setLoading(false);
-      navigate('/login');
-    }, 1500);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    // When integrated with Supabase, you would use code like this:
-    // try {
-    //   const { error } = await supabase.auth.signUp({ email, password });
-    //   if (error) throw error;
-    //   toast.success('Registration successful! Please check your email to verify your account.');
-    //   navigate('/login');
-    // } catch (error) {
-    //   toast.error('Registration failed: ' + error.message);
-    // } finally {
-    //   setLoading(false);
-    // }
+      if (error) {
+        throw error;
+      }
+
+      toast.success('Registration successful! Please verify your email.');
+      navigate('/login');
+    } catch (error: any) {
+      toast.error(`Registration failed: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

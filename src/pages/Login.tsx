@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, AlertTriangle, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,32 +13,40 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/dashboard');
+      }
+    };
+    
+    checkSession();
+  }, [navigate]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     setLoading(true);
     
-    // This is just a placeholder. In a real app, you would connect to Supabase
-    // for authentication. This simulates a successful login for demo purposes.
-    setTimeout(() => {
-      toast.success('Login successful! Redirecting to dashboard...');
-      setLoading(false);
-      // Store a demo token to simulate authentication
-      localStorage.setItem('cyber-auth-token', 'demo-token');
-      navigate('/dashboard');
-    }, 1500);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    // When integrated with Supabase, you would use code like this:
-    // try {
-    //   const { error } = await supabase.auth.signIn({ email, password });
-    //   if (error) throw error;
-    //   toast.success('Login successful! Redirecting to dashboard...');
-    //   navigate('/dashboard');
-    // } catch (error) {
-    //   toast.error('Login failed: ' + error.message);
-    // } finally {
-    //   setLoading(false);
-    // }
+      if (error) {
+        throw error;
+      }
+
+      toast.success('Login successful! Redirecting to dashboard...');
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast.error(`Login failed: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
