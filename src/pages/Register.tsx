@@ -63,24 +63,22 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black p-4">
-      <div className="absolute inset-0 network-lines opacity-20"></div>
-      
-      <div className="cyber-card w-full max-w-md p-8 z-10">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-4">
+      <div className="bg-white w-full max-w-md p-8 z-10 rounded-lg shadow-sm border border-gray-100">
         <div className="flex justify-center mb-6">
-          <Shield className="h-12 w-12 text-green-500 animate-pulse-glow" />
+          <Shield className="h-12 w-12 text-teal-500 animate-pulse-glow" />
         </div>
         
-        <h1 className="text-3xl font-bold text-center mb-2 text-white">
-          Create <span className="text-green-500">Account</span>
+        <h1 className="text-3xl font-bold text-center mb-2 text-gray-800">
+          Create <span className="text-teal-600">Account</span>
         </h1>
-        <p className="text-gray-400 text-center mb-8">
+        <p className="text-gray-600 text-center mb-8">
           Join CyberSentry to protect against online threats
         </p>
         
         <form onSubmit={handleRegister} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-300 block">
+            <label htmlFor="email" className="text-sm font-medium text-gray-700 block">
               Email Address
             </label>
             <Input
@@ -95,7 +93,7 @@ const Register = () => {
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-gray-300 block">
+            <label htmlFor="password" className="text-sm font-medium text-gray-700 block">
               Password
             </label>
             <Input
@@ -113,7 +111,7 @@ const Register = () => {
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-300 block">
+            <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 block">
               Confirm Password
             </label>
             <Input
@@ -132,10 +130,10 @@ const Register = () => {
               id="terms" 
               checked={acceptTerms}
               onCheckedChange={() => setAcceptTerms(!acceptTerms)}
-              className="mt-1 bg-black border-green-500/50 data-[state=checked]:bg-green-500 data-[state=checked]:text-black"
+              className="mt-1 data-[state=checked]:bg-teal-500 data-[state=checked]:text-white"
             />
-            <label htmlFor="terms" className="text-sm text-gray-400">
-              I accept the <a href="#" className="text-green-500 hover:text-green-400">Terms of Service</a> and <a href="#" className="text-green-500 hover:text-green-400">Privacy Policy</a>
+            <label htmlFor="terms" className="text-sm text-gray-600">
+              I accept the <a href="#" className="text-teal-600 hover:text-teal-500">Terms of Service</a> and <a href="#" className="text-teal-600 hover:text-teal-500">Privacy Policy</a>
             </label>
           </div>
           
@@ -158,17 +156,17 @@ const Register = () => {
         </form>
         
         <div className="mt-8 text-center">
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-gray-600">
             Already have an account?{' '}
-            <Link to="/login" className="text-green-500 hover:text-green-400">
+            <Link to="/login" className="text-teal-600 hover:text-teal-500">
               Sign in
             </Link>
           </div>
         </div>
         
-        <div className="mt-6 p-4 bg-black/80 rounded border border-green-500/10 flex items-center gap-3">
-          <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-          <p className="text-xs text-gray-400">
+        <div className="mt-6 p-4 bg-amber-50 rounded border border-amber-100 flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
+          <p className="text-xs text-gray-600">
             Your data is encrypted and protected using industry-standard security protocols.
           </p>
         </div>

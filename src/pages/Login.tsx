@@ -55,24 +55,22 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black p-4">
-      <div className="absolute inset-0 network-lines opacity-20"></div>
-      
-      <div className="cyber-card w-full max-w-md p-8 z-10">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-4">
+      <div className="bg-white w-full max-w-md p-8 z-10 rounded-lg shadow-sm border border-gray-100">
         <div className="flex justify-center mb-6">
-          <Shield className="h-12 w-12 text-green-500 animate-pulse-glow" />
+          <Shield className="h-12 w-12 text-teal-500 animate-pulse-glow" />
         </div>
         
-        <h1 className="text-3xl font-bold text-center mb-2 text-white">
-          Secure <span className="text-green-500">Login</span>
+        <h1 className="text-3xl font-bold text-center mb-2 text-gray-800">
+          Secure <span className="text-teal-600">Login</span>
         </h1>
-        <p className="text-gray-400 text-center mb-8">
+        <p className="text-gray-600 text-center mb-8">
           Access your CyberSentry dashboard
         </p>
         
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-300 block">
+            <label htmlFor="email" className="text-sm font-medium text-gray-700 block">
               Email Address
             </label>
             <Input
@@ -88,10 +86,10 @@ const Login = () => {
           
           <div className="space-y-2">
             <div className="flex justify-between">
-              <label htmlFor="password" className="text-sm font-medium text-gray-300">
+              <label htmlFor="password" className="text-sm font-medium text-gray-700">
                 Password
               </label>
-              <a href="#" className="text-sm text-green-500 hover:text-green-400">
+              <a href="#" className="text-sm text-teal-600 hover:text-teal-500">
                 Forgot password?
               </a>
             </div>
@@ -125,17 +123,17 @@ const Login = () => {
         </form>
         
         <div className="mt-8 text-center">
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-gray-600">
             Don't have an account?{' '}
-            <Link to="/register" className="text-green-500 hover:text-green-400">
+            <Link to="/register" className="text-teal-600 hover:text-teal-500">
               Create an account
             </Link>
           </div>
         </div>
         
-        <div className="mt-6 p-4 bg-black/80 rounded border border-green-500/10 flex items-center gap-3">
-          <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-          <p className="text-xs text-gray-400">
+        <div className="mt-6 p-4 bg-amber-50 rounded border border-amber-100 flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
+          <p className="text-xs text-gray-600">
             Always ensure you're on the official CyberSentry domain before entering credentials.
           </p>
         </div>

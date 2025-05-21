@@ -1,46 +1,39 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
 
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 142 70% 50%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 168 75% 40%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 142 70% 50%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 168 75% 40%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 142 70% 50%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 168 75% 40%;
     
     --radius: 0.5rem;
-    
-    --cyber-dark: #000000;
-    --cyber-secondary: #0a0a0a;
-    --cyber-accent: #00FF66;
-    --cyber-purple: #8A2BE2;
-    --cyber-success: #00E676;
-    --cyber-warning: #FFD600;
-    --cyber-danger: #FF5252;
   }
 }
 
@@ -50,23 +43,20 @@
   }
 
   body {
-    @apply bg-cyber-dark text-foreground;
-    background-image: 
-      radial-gradient(circle at 50% 50%, rgba(0, 255, 102, 0.05) 0%, rgba(0, 0, 0, 0) 50%),
-      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300ff66' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    @apply bg-background text-foreground;
   }
 
   input::placeholder {
-    @apply text-gray-500;
+    @apply text-gray-400;
   }
 }
 
 @keyframes pulse-glow {
   0%, 100% {
-    filter: drop-shadow(0 0 5px rgba(13, 230, 252, 0.7));
+    filter: drop-shadow(0 0 5px rgba(20, 184, 166, 0.7));
   }
   50% {
-    filter: drop-shadow(0 0 15px rgba(13, 230, 252, 1));
+    filter: drop-shadow(0 0 15px rgba(20, 184, 166, 1));
   }
 }
 
@@ -98,34 +88,14 @@
   }
 }
 
-.cyber-card {
-  @apply bg-cyber-secondary/80 backdrop-blur-sm border border-cyber-accent/20 rounded-md overflow-hidden;
-  box-shadow: 0 0 15px rgba(0, 255, 102, 0.15);
-  position: relative;
-}
-
-.cyber-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(0, 255, 102, 0.2) 15%, 
-    rgba(0, 255, 102, 0.4) 50%,
-    rgba(0, 255, 102, 0.2) 85%, 
-    transparent 100%);
-}
-
+/* Form styles */
 .cyber-input {
-  @apply bg-cyber-dark/80 border border-cyber-accent/30 text-white rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyber-accent/50 focus:border-transparent;
+  @apply bg-white border border-gray-200 text-gray-800 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent;
 }
 
 .cyber-button {
-  @apply px-6 py-2 rounded-md bg-gradient-to-r from-cyber-accent to-green-700 text-black font-medium transition-all;
-  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+  @apply px-6 py-2 rounded-md bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-medium transition-all;
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -146,8 +116,8 @@
 }
 
 .cyber-button:hover {
-  @apply from-green-700 to-cyber-accent;
-  box-shadow: 0 0 20px rgba(0, 255, 102, 0.6);
+  @apply from-emerald-500 to-teal-500;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
 }
 
 .cyber-button:hover::after {
@@ -156,234 +126,4 @@
 
 .cyber-button:active {
   @apply transform scale-95;
-}
-
-.network-lines {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background-image: 
-    linear-gradient(90deg, rgba(0, 255, 102, 0.03) 1px, transparent 1px),
-    linear-gradient(rgba(0, 255, 102, 0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
-}
-
-.glow-effect {
-  position: relative;
-}
-
-.glow-effect::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #00FF66, #006633, #00FF66);
-  z-index: -1;
-  border-radius: 0.6rem;
-  animation: glowing 3s ease-in-out infinite;
-}
-
-@keyframes glowing {
-  0% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.8;
-  }
-  100% {
-    opacity: 0.5;
-  }
-}
-
-.score-gauge {
-  position: relative;
-  height: 120px;
-  width: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(0, 255, 102, 0.2);
-}
-
-.score-gauge-fill {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border-radius: 0 0 6rem 6rem;
-  transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.score-gauge::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      rgba(0, 255, 102, 0.05) 1px,
-      transparent 2px,
-      transparent 10px
-    );
-}
-
-@keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-}
-
-@keyframes blink {
-  50% {
-    border-color: transparent;
-  }
-}
-
-.typing-animation {
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  animation: 
-    typing 1.5s steps(40, end),
-    blink 0.75s step-end infinite;
-}
-
-.cyber-terminal {
-  background-color: rgba(0, 0, 0, 0.7);
-  border: 1px solid var(--cyber-accent);
-  border-radius: 4px;
-  padding: 1rem;
-  font-family: monospace;
-  position: relative;
-  overflow: hidden;
-}
-
-.cyber-terminal::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1.5rem;
-  background-color: rgba(0, 255, 102, 0.1);
-  border-bottom: 1px solid var(--cyber-accent);
-}
-
-.cyber-terminal::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 255, 102, 0.03) 0px,
-    rgba(0, 255, 102, 0.03) 1px,
-    transparent 1px,
-    transparent 2px
-  );
-  pointer-events: none;
-}
-
-.scan-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5px;
-  background: linear-gradient(to right, 
-    transparent, 
-    rgba(0, 255, 102, 0.5),
-    transparent
-  );
-  animation: scan-line 2s linear infinite;
-  z-index: 1;
-}
-
-.matrix-rain {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.matrix-column {
-  position: absolute;
-  top: -100px;
-  width: 1px;
-  height: 100px;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 255, 102, 0),
-    rgba(0, 255, 102, 0.5),
-    rgba(0, 255, 102, 0)
-  );
-  animation: matrix-fall 3s linear infinite;
-}
-
-@keyframes matrix-fall {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100vh);
-  }
-}
-
-/* Hacker-themed progress bar */
-.cyber-progress {
-  width: 100%;
-  height: 4px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 255, 102, 0.3);
-  border-radius: var(--radius);
-  overflow: hidden;
-  position: relative;
-}
-
-.cyber-progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--cyber-accent), var(--cyber-purple));
-  transition: width 0.3s ease;
-  position: relative;
-}
-
-.cyber-progress-bar::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    transparent 100%
-  );
-  animation: progress-shine 1s linear infinite;
-}
-
-@keyframes progress-shine {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
 }

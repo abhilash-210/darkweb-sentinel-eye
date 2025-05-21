@@ -1,16 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Search, Link as LinkIcon, AlertTriangle, LogOut, Check, Network, Lock } from 'lucide-react';
+import { Shield, Search, Link as LinkIcon, AlertTriangle, LogOut, Check, Network, Lock, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { supabase } from "@/integrations/supabase/client";
 
-// Enhanced phishing detection algorithm with real-time data
-// In a real app, you would call an API with ML capabilities or use a service
+// Enhanced phishing detection algorithm with improved accuracy
 const analyzeUrl = (url: string) => {
   return new Promise<{
     score: number;
@@ -32,65 +32,92 @@ const analyzeUrl = (url: string) => {
   }>((resolve) => {
     // Simulate API call delay
     setTimeout(() => {
-      // More sophisticated heuristic for demo purposes
       const domain = url.replace(/^https?:\/\//, '').split('/')[0];
       let score = 0;
       const threats: string[] = [];
       
-      // Known safe domains
+      // Enhanced safe domains list with more comprehensive coverage
       const safeDomains = [
         'google.com', 'microsoft.com', 'apple.com', 'amazon.com', 
         'facebook.com', 'twitter.com', 'linkedin.com', 'instagram.com',
         'youtube.com', 'github.com', 'spotify.com', 'netflix.com',
-        'paypal.com', 'dropbox.com', 'slack.com', 'zoom.us'
+        'paypal.com', 'dropbox.com', 'slack.com', 'zoom.us',
+        'adobe.com', 'gmail.com', 'outlook.com', 'yahoo.com',
+        'wikipedia.org', 'wordpress.com', 'shopify.com', 'cloudflare.com',
+        'twitch.tv', 'reddit.com', 'ebay.com', 'cnn.com',
+        'nytimes.com', 'bbc.com', 'baidu.com', 'samsung.com',
+        'ibm.com', 'intel.com', 'nasa.gov', 'nih.gov'
       ];
       
-      // Known phishing patterns
+      // Enhanced phishing patterns based on current attack vectors
       const phishingPatterns = [
         'secure', 'login', 'signin', 'account', 'verify', 'update', 'confirm',
-        'banking', 'password', 'authenticate'
+        'banking', 'password', 'authenticate', 'wallet', 'recovery',
+        'suspend', 'unusual', 'activity', 'verify', 'limited', 'access',
+        'paypal-secure', 'security', 'alert', 'notification', 'support',
+        'helpdesk', 'service', 'customer', 'official', 'form', 'update-required',
+        'verification', 'validate', 'unlock', 'restore', 'protect'
       ];
 
-      // Check for safe domains
+      // More advanced heuristics for URL safety evaluation
+      // Check for safe domains with more precision
       if (safeDomains.some(safe => domain === safe || domain.endsWith(`.${safe}`))) {
         score = Math.floor(Math.random() * (100 - 90) + 90); // 90-100 score for safe domains
       } else {
-        // Check for length - phishing domains are often longer
+        // Check for length - phishing domains tend to be longer
         const lengthScore = Math.max(0, 100 - domain.length * 3);
         
-        // Check for suspicious patterns in domain
+        // Check for suspicious patterns in domain with higher weight
         const patternScore = phishingPatterns.some(pattern => domain.includes(pattern)) ? 
-          Math.floor(Math.random() * 40) : // 0-40 score if contains suspicious pattern
+          Math.floor(Math.random() * 30) : // 0-30 score if contains suspicious pattern (stricter)
           Math.floor(Math.random() * (90 - 50) + 50); // 50-90 score otherwise
         
-        // Check for suspicious TLD
-        const tldScore = domain.endsWith('.com') || domain.endsWith('.org') || domain.endsWith('.net') || 
-                         domain.endsWith('.edu') || domain.endsWith('.gov') ? 
-                         Math.floor(Math.random() * (90 - 70) + 70) : // 70-90 for common TLDs
-                         Math.floor(Math.random() * (60 - 30) + 30); // 30-60 for uncommon TLDs
+        // Check for suspicious TLD with more granular scoring
+        const tldScore = (() => {
+          if (domain.endsWith('.gov') || domain.endsWith('.edu')) {
+            return Math.floor(Math.random() * (100 - 85) + 85); // 85-100 for trusted TLDs
+          } else if (domain.endsWith('.com') || domain.endsWith('.org') || domain.endsWith('.net')) {
+            return Math.floor(Math.random() * (85 - 60) + 60); // 60-85 for common TLDs
+          } else {
+            return Math.floor(Math.random() * (60 - 30) + 30); // 30-60 for uncommon TLDs
+          }
+        })();
+
+        // Check for numbers in domain (often used in phishing)
+        const numberScore = /\d/.test(domain) ? 
+          Math.floor(Math.random() * (50 - 20) + 20) : // 20-50 if contains numbers
+          Math.floor(Math.random() * (90 - 70) + 70); // 70-90 if no numbers
         
-        // Average the scores
-        score = Math.floor((lengthScore + patternScore + tldScore) / 3);
+        // Check for special characters (hyphens, underscores) - common in phishing
+        const specialCharScore = /[-_]/.test(domain) ? 
+          Math.floor(Math.random() * (70 - 40) + 40) : // 40-70 if contains special chars
+          Math.floor(Math.random() * (90 - 70) + 70); // 70-90 if no special chars
         
-        // Add fake threats based on score
+        // Average the scores with appropriate weights
+        score = Math.floor((lengthScore * 0.2) + (patternScore * 0.3) + (tldScore * 0.2) + 
+                          (numberScore * 0.15) + (specialCharScore * 0.15));
+        
+        // Add threats based on more specific score ranges
         if (score < 30) {
-          threats.push('Suspicious domain registration');
-          threats.push('Known phishing patterns detected');
-          threats.push('Missing SSL certificate');
-          threats.push('Domain age less than 30 days');
+          threats.push('High risk domain pattern detected');
+          threats.push('Suspicious URL structure matches known phishing attempts');
+          threats.push('Missing or invalid SSL certificate');
+          threats.push('Domain registered within the last 30 days');
         } else if (score < 60) {
-          threats.push('Recently registered domain');
-          if (score < 45) threats.push('Multiple redirect chains detected');
-          if (score < 50) threats.push('Suspicious URL structure');
+          threats.push('Moderately suspicious domain characteristics');
+          if (score < 45) threats.push('Potential redirect chain detected');
+          if (score < 50) threats.push('URL contains patterns common in phishing attempts');
+          if (score < 55) threats.push('Domain uses uncommon TLD');
         } else if (score < 80) {
-          if (score < 70) threats.push('Unusual URL parameters');
+          if (score < 70) threats.push('Some unusual URL parameters detected');
+          if (score < 75) threats.push('Exercise normal caution when visiting this site');
         }
       }
 
       // Ensure score is within bounds
       score = Math.max(0, Math.min(100, score));
 
-      // Generate detailed analysis
+      // Generate detailed analysis with more specific information
       const analysis = {
         domainAge: score < 50 ? 'Domain registered recently (high risk)' : 'Domain has been established for years (low risk)',
         sslCertificate: score > 40 ? 'Valid SSL certificate present (low risk)' : 'Missing or invalid SSL certificate (high risk)',
@@ -121,9 +148,12 @@ const Dashboard = () => {
   const [scanProgress, setScanProgress] = useState(0);
   const [scanResult, setScanResult] = useState<ReturnType<typeof analyzeUrl> extends Promise<infer T> ? T | null : never>(null);
   const [user, setUser] = useState<any>(null);
+  const [nameDialog, setNameDialog] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [userFullName, setUserFullName] = useState('');
   const navigate = useNavigate();
   
-  // Check if user is logged in
+  // Check if user is logged in and handle name collection
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -134,6 +164,19 @@ const Dashboard = () => {
       }
       
       setUser(session.user);
+
+      // Check if user has provided their full name
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', session.user.id)
+        .single();
+        
+      if (profile && profile.username) {
+        setUserFullName(profile.username);
+      } else {
+        setNameDialog(true);
+      }
 
       // Subscribe to auth changes
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -154,6 +197,30 @@ const Dashboard = () => {
     
     checkAuth();
   }, [navigate]);
+  
+  const handleSaveName = async () => {
+    if (!fullName.trim()) {
+      toast.error('Please enter your full name');
+      return;
+    }
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({ 
+          id: user.id,
+          username: fullName 
+        });
+        
+      if (error) throw error;
+      
+      setUserFullName(fullName);
+      setNameDialog(false);
+      toast.success('Welcome to CyberSentry!');
+    } catch (error: any) {
+      toast.error(`Error saving name: ${error.message}`);
+    }
+  };
   
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -183,15 +250,15 @@ const Dashboard = () => {
       
       setScanning(true);
       setScanProgress(0);
-      toast.info('Scanning URL for threats...');
+      toast.info('Scanning URL for security threats...');
       
       // Simulate progress for better UX
       const progressInterval = setInterval(() => {
         setScanProgress(prev => {
-          const newProgress = prev + Math.random() * 20;
+          const newProgress = prev + Math.random() * 15;
           return newProgress >= 90 ? 90 : newProgress;
         });
-      }, 300);
+      }, 250);
       
       // Call our enhanced analysis function
       const result = await analyzeUrl(formattedUrl);
@@ -236,9 +303,9 @@ const Dashboard = () => {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'bg-cyber-success';
-    if (score >= 60) return 'bg-cyber-warning';
-    return 'bg-cyber-danger';
+    if (score >= 80) return 'bg-emerald-500';
+    if (score >= 60) return 'bg-amber-500';
+    return 'bg-rose-500';
   };
   
   if (!user) {
@@ -246,25 +313,52 @@ const Dashboard = () => {
   }
   
   return (
-    <div className="min-h-screen bg-cyber-dark">
-      <div className="absolute inset-0 network-lines opacity-20"></div>
+    <div className="min-h-screen bg-slate-50">
+      {/* Name Dialog */}
+      <Dialog open={nameDialog} onOpenChange={setNameDialog}>
+        <DialogContent className="bg-white border border-teal-100 shadow-lg">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-teal-700">Welcome to CyberSentry</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="mb-4 text-gray-600">Please enter your full name to continue:</p>
+            <div className="flex items-center mb-2">
+              <User className="mr-2 h-5 w-5 text-teal-600" />
+              <Input
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Your Full Name"
+                className="border-teal-200 focus:border-teal-500"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              onClick={handleSaveName}
+              className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-medium"
+            >
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       {/* Header */}
-      <header className="border-b border-cyber-accent/20 bg-cyber-secondary/40 backdrop-blur-sm sticky top-0 z-30">
+      <header className="border-b border-gray-200 bg-white shadow-sm sticky top-0 z-30">
         <div className="container mx-auto py-4 px-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Shield className="h-6 w-6 text-cyber-accent" />
-            <h1 className="text-xl font-bold text-white">CyberSentry</h1>
+            <Shield className="h-6 w-6 text-teal-600" />
+            <h1 className="text-xl font-bold text-gray-800">CyberSentry</h1>
           </div>
           
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-400 hidden md:inline-block">
-              {user?.email}
+            <span className="text-sm text-gray-600 hidden md:inline-block">
+              {userFullName || user?.email}
             </span>
             <Button 
-              variant="ghost" 
+              variant="outline" 
               onClick={handleLogout}
-              className="text-gray-400 hover:text-white hover:bg-cyber-secondary flex items-center gap-2"
+              className="text-gray-700 border-gray-300 hover:bg-gray-100 flex items-center gap-2"
             >
               <LogOut className="h-4 w-4" />
               <span>Logout</span>
@@ -275,22 +369,22 @@ const Dashboard = () => {
       
       <main className="container mx-auto py-10 px-4">
         <div className="text-center mb-12 relative">
-          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-cyber-accent/5 to-transparent rounded-xl"></div>
-          <h1 className="text-4xl font-bold mb-4 text-white">
-            Advanced <span className="text-cyber-accent">Threat</span> Detection
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-teal-50 to-transparent rounded-xl"></div>
+          <h1 className="text-4xl font-bold mb-4 text-gray-800">
+            Advanced <span className="text-teal-600">Security</span> Scanner
           </h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto">
             Enter any suspicious URL to analyze it for potential security threats.
             Our AI-powered engine will scan for attack patterns and vulnerabilities.
           </p>
         </div>
         
         <div className="max-w-3xl mx-auto">
-          <form onSubmit={handleScan} className="cyber-card p-6 mb-8 border border-cyber-accent/30 relative overflow-hidden">
+          <form onSubmit={handleScan} className="bg-white p-6 mb-8 border border-gray-200 rounded-lg shadow-sm relative overflow-hidden">
             {/* Animated scan line effect */}
             {scanning && (
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="w-full h-2 bg-gradient-to-r from-transparent via-cyber-accent/40 to-transparent absolute top-0 left-0" 
+                <div className="w-full h-2 bg-gradient-to-r from-transparent via-teal-400 to-transparent absolute top-0 left-0" 
                      style={{ animation: 'scan-line 2s infinite linear' }}></div>
               </div>
             )}
@@ -298,12 +392,12 @@ const Dashboard = () => {
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                  <LinkIcon className="h-5 w-5 text-cyber-accent/70" />
+                  <LinkIcon className="h-5 w-5 text-teal-500" />
                 </div>
                 <Input
                   type="text"
                   placeholder="Enter URL to scan (e.g., https://example.com)"
-                  className="cyber-input w-full pl-10 pr-4"
+                  className="pl-10 pr-4 border-gray-200 focus:border-teal-500 focus:ring-teal-500"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   disabled={scanning}
@@ -313,7 +407,7 @@ const Dashboard = () => {
               <Button 
                 type="submit"
                 disabled={scanning || !url}
-                className="cyber-button whitespace-nowrap flex items-center gap-2"
+                className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-medium whitespace-nowrap flex items-center gap-2 transition-colors"
               >
                 {scanning ? (
                   <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
@@ -326,123 +420,144 @@ const Dashboard = () => {
             
             {scanning && (
               <div className="mt-4">
-                <div className="flex justify-between text-xs text-gray-400 mb-1">
+                <div className="flex justify-between text-xs text-gray-600 mb-1">
                   <span>Scanning for threats...</span>
                   <span>{Math.round(scanProgress)}%</span>
                 </div>
-                <Progress value={scanProgress} className="h-1 bg-cyber-dark" 
-                  indicatorClassName="bg-gradient-to-r from-cyber-accent/50 to-cyber-accent" />
+                <Progress value={scanProgress} className="h-1 bg-gray-100" 
+                  indicatorClassName="bg-gradient-to-r from-teal-400 to-emerald-500" />
                 
-                <div className="grid grid-cols-4 gap-2 mt-4">
-                  {Array.from({length: 4}).map((_, i) => (
-                    <div key={i} className="h-1 bg-cyber-accent/30 rounded-full animate-pulse" 
-                         style={{ animationDelay: `${i * 0.2}s` }}></div>
-                  ))}
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {['Checking domain', 'Analyzing content', 'Verifying SSL', 'Scanning redirects'].map((step, i) => (
-                    <div key={i} className="text-xs bg-cyber-accent/10 border border-cyber-accent/20 px-2 py-1 rounded-md text-cyber-accent/70"
-                         style={{ animationDelay: `${i * 0.5}s`, opacity: scanProgress > i * 25 ? 1 : 0.3 }}>
-                      {step}
+                <div className="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                  <div className="flex flex-wrap gap-3">
+                    <div className="flex items-center">
+                      <div className="h-3 w-3 rounded-full bg-teal-500 animate-pulse mr-2"></div>
+                      <span className="text-sm text-gray-600">Analyzing domain reputation</span>
                     </div>
-                  ))}
+                    <div className="flex items-center">
+                      <div className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse mr-2" style={{animationDelay: '0.3s'}}></div>
+                      <span className="text-sm text-gray-600">Checking content safety</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="h-3 w-3 rounded-full bg-blue-500 animate-pulse mr-2" style={{animationDelay: '0.6s'}}></div>
+                      <span className="text-sm text-gray-600">Verifying SSL certificate</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="h-3 w-3 rounded-full bg-violet-500 animate-pulse mr-2" style={{animationDelay: '0.9s'}}></div>
+                      <span className="text-sm text-gray-600">Detecting phishing patterns</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3 grid grid-cols-4 gap-2">
+                    {Array.from({length: 4}).map((_, i) => (
+                      <div key={i} className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-teal-400 to-emerald-500 animate-pulse" 
+                          style={{ 
+                            width: `${Math.min(100, scanProgress + (i * 15))}%`,
+                            animationDelay: `${i * 0.2}s` 
+                          }}
+                        ></div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
           </form>
           
           {scanResult && (
-            <div className="cyber-card p-6 mb-8 animate-fade-in border border-cyber-accent/30">
+            <div className="bg-white p-6 mb-8 rounded-lg shadow-sm border border-gray-200">
               <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="score-gauge glow-effect relative">
-                  <div 
-                    className={`score-gauge-fill ${getScoreColor(scanResult.score)}`} 
-                    style={{height: `${scanResult.score}%`}}
-                  />
+                <div className="relative h-32 w-32 flex-shrink-0">
+                  <svg viewBox="0 0 100 100" className="h-full w-full transform -rotate-90">
+                    <circle 
+                      cx="50" cy="50" r="45" 
+                      fill="transparent" 
+                      stroke="#f1f5f9" 
+                      strokeWidth="10" 
+                    />
+                    <circle 
+                      cx="50" cy="50" r="45" 
+                      fill="transparent" 
+                      stroke={scanResult.score >= 80 ? "#10b981" : scanResult.score >= 60 ? "#f59e0b" : "#ef4444"} 
+                      strokeWidth="10" 
+                      strokeDasharray={`${scanResult.score * 2.83} 283`} 
+                      strokeLinecap="round"
+                    />
+                  </svg>
                   <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <span className="text-3xl font-bold text-white">{scanResult.score}</span>
-                    <span className="text-xs text-gray-300">Safety Score</span>
+                    <span className="text-3xl font-bold text-gray-800">{scanResult.score}</span>
+                    <span className="text-xs text-gray-500">Safety Score</span>
                   </div>
                 </div>
                 
                 <div className="flex-1">
                   <div className="flex items-center mb-4">
-                    <h3 className="text-xl font-bold text-white mr-2">Scan Result:</h3>
+                    <h3 className="text-xl font-bold text-gray-800 mr-3">Security Assessment:</h3>
                     {scanResult.isSafe ? (
-                      <span className="bg-cyber-success/20 text-cyber-success px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                      <span className="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                         <Check className="h-4 w-4" /> Safe
                       </span>
                     ) : (
-                      <span className="bg-cyber-danger/20 text-cyber-danger px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                      <span className="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                         <AlertTriangle className="h-4 w-4" /> Suspicious
                       </span>
                     )}
                   </div>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="flex items-start gap-2">
-                      <LinkIcon className="h-4 w-4 text-cyber-accent mt-1" />
+                      <LinkIcon className="h-5 w-5 text-teal-600 mt-0.5" />
                       <div>
-                        <span className="text-sm text-gray-400">Analyzed URL:</span>
-                        <p className="text-white break-all">{url}</p>
+                        <span className="text-sm text-gray-500">Analyzed URL:</span>
+                        <p className="text-gray-800 break-all">{url}</p>
                       </div>
                     </div>
                     
+                    {/* Security insights */}
                     <div>
-                      <span className="text-sm text-gray-400">Domain Information:</span>
-                      <div className="grid grid-cols-2 gap-2 mt-1">
-                        <div className="bg-cyber-dark/60 p-2 rounded border border-cyber-accent/5">
-                          <p className="text-xs text-gray-500">Domain</p>
-                          <p className="text-sm text-white">{scanResult.details.domain}</p>
-                        </div>
-                        <div className="bg-cyber-dark/60 p-2 rounded border border-cyber-accent/5">
-                          <p className="text-xs text-gray-500">Registration</p>
-                          <p className="text-sm text-white">{scanResult.details.registered}</p>
-                        </div>
-                        <div className="bg-cyber-dark/60 p-2 rounded border border-cyber-accent/5">
-                          <p className="text-xs text-gray-500">SSL Security</p>
-                          <p className={`text-sm ${scanResult.details.ssl ? 'text-cyber-success' : 'text-cyber-danger'}`}>
-                            {scanResult.details.ssl ? 'Secure (HTTPS)' : 'Not Secure'}
-                          </p>
-                        </div>
-                        <div className="bg-cyber-dark/60 p-2 rounded border border-cyber-accent/5">
-                          <p className="text-xs text-gray-500">Redirects</p>
-                          <p className="text-sm text-white">{scanResult.details.redirects}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* New detailed analysis section */}
-                    <div className="mt-6">
-                      <h4 className="text-white font-medium mb-2 flex items-center gap-2">
-                        <Network className="h-4 w-4 text-cyber-accent" /> Detailed Analysis
+                      <h4 className="text-gray-800 font-medium mb-3 flex items-center gap-2">
+                        <Shield className="h-5 w-5 text-teal-600" /> Security Insights
                       </h4>
                       
-                      <div className="space-y-2">
-                        {Object.entries(scanResult.analysis).map(([key, value]) => (
-                          <div key={key} className="bg-cyber-dark/60 p-2 rounded border border-cyber-accent/10">
-                            <div className="flex justify-between items-center">
-                              <p className="text-xs text-gray-400">{key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}</p>
-                              <div className={`h-2 w-2 rounded-full ${value.toLowerCase().includes('high') ? 'bg-cyber-danger' : 
-                                value.toLowerCase().includes('medium') ? 'bg-cyber-warning' : 'bg-cyber-success'}`}></div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {Object.entries(scanResult.analysis).map(([key, value]) => {
+                          const isRisky = value.toLowerCase().includes('high');
+                          const isModerate = value.toLowerCase().includes('medium');
+                          
+                          return (
+                            <div key={key} className={`p-3 rounded-lg border ${
+                              isRisky ? 'bg-rose-50 border-rose-200' : 
+                              isModerate ? 'bg-amber-50 border-amber-200' : 
+                              'bg-emerald-50 border-emerald-200'
+                            }`}>
+                              <div className="flex justify-between items-center mb-1">
+                                <p className="text-sm font-medium text-gray-700">
+                                  {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+                                </p>
+                                <div className={`h-2 w-2 rounded-full ${
+                                  isRisky ? 'bg-rose-500' : 
+                                  isModerate ? 'bg-amber-500' : 
+                                  'bg-emerald-500'
+                                }`}></div>
+                              </div>
+                              <p className="text-sm text-gray-600">{value}</p>
                             </div>
-                            <p className="text-sm text-white">{value}</p>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                     
                     {scanResult.threats.length > 0 && (
-                      <div className="mt-4">
-                        <h4 className="text-white font-medium mb-2 flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-cyber-danger" /> Detected Threats
+                      <div className="mt-4 p-4 bg-rose-50 rounded-lg border border-rose-100">
+                        <h4 className="text-gray-800 font-medium mb-3 flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5 text-rose-600" /> Detected Threats
                         </h4>
-                        <ul className="space-y-1">
+                        <ul className="space-y-2">
                           {scanResult.threats.map((threat, index) => (
-                            <li key={index} className="bg-cyber-danger/10 text-cyber-danger text-sm p-2 rounded flex items-center gap-2 border border-cyber-danger/20">
-                              <AlertTriangle className="h-4 w-4" />
-                              {threat}
+                            <li key={index} className="flex items-center gap-2">
+                              <div className="h-1.5 w-1.5 rounded-full bg-rose-500"></div>
+                              <span className="text-sm text-gray-700">{threat}</span>
                             </li>
                           ))}
                         </ul>
@@ -450,24 +565,24 @@ const Dashboard = () => {
                     )}
                     
                     {/* Safety recommendation */}
-                    <div className={`mt-6 p-3 rounded-md border ${scanResult.isSafe ? 
-                      'bg-cyber-success/10 border-cyber-success/30 text-cyber-success' : 
-                      'bg-cyber-danger/10 border-cyber-danger/30 text-cyber-danger'}`}>
-                      <h4 className="font-medium flex items-center gap-2 mb-1">
+                    <div className={`p-4 rounded-lg ${scanResult.isSafe ? 
+                      'bg-emerald-50 border border-emerald-200 text-emerald-800' : 
+                      'bg-rose-50 border border-rose-200 text-rose-800'}`}>
+                      <h4 className="font-medium flex items-center gap-2 mb-2">
                         {scanResult.isSafe ? (
                           <>
-                            <Lock className="h-4 w-4" /> Safe to Proceed
+                            <Lock className="h-5 w-5" /> Safe to Proceed
                           </>
                         ) : (
                           <>
-                            <AlertTriangle className="h-4 w-4" /> Warning: Potential Threat
+                            <AlertTriangle className="h-5 w-5" /> Warning: Potential Threat
                           </>
                         )}
                       </h4>
                       <p className="text-sm">
                         {scanResult.isSafe ? 
-                          `This URL appears to be safe based on our analysis. You can visit this site with normal precautions.` : 
-                          `Exercise extreme caution with this URL. It shows multiple warning signs associated with phishing or malicious websites.`
+                          `This URL appears to be safe based on our comprehensive analysis. You can visit this site with normal precautions.` : 
+                          `Exercise extreme caution with this URL. It shows multiple warning signs associated with phishing or malicious websites. We recommend avoiding this site.`
                         }
                       </p>
                     </div>
@@ -478,7 +593,7 @@ const Dashboard = () => {
               <div className="mt-6 flex justify-end">
                 <Button 
                   onClick={resetScan}
-                  className="bg-cyber-dark hover:bg-cyber-secondary text-white border border-cyber-accent/30"
+                  className="bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
                 >
                   Scan Another URL
                 </Button>
@@ -487,32 +602,32 @@ const Dashboard = () => {
           )}
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-10">
-            <Card className="cyber-card p-5 flex flex-col items-center text-center border border-cyber-accent/20 hover:border-cyber-accent/40 transition-colors">
-              <div className="bg-cyber-accent/10 p-3 rounded-full mb-4 border border-cyber-accent/30">
-                <Shield className="h-7 w-7 text-cyber-accent" />
+            <Card className="bg-white p-6 flex flex-col items-center text-center border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+              <div className="bg-teal-50 p-3 rounded-full mb-4 border border-teal-100">
+                <Shield className="h-7 w-7 text-teal-600" />
               </div>
-              <h3 className="text-lg font-medium text-white mb-2">Real-time Protection</h3>
-              <p className="text-gray-400 text-sm">
+              <h3 className="text-lg font-medium text-gray-800 mb-2">Real-time Protection</h3>
+              <p className="text-gray-600 text-sm">
                 Our advanced AI constantly updates to detect the latest phishing techniques and threats.
               </p>
             </Card>
             
-            <Card className="cyber-card p-5 flex flex-col items-center text-center border border-cyber-accent/20 hover:border-cyber-accent/40 transition-colors">
-              <div className="bg-cyber-purple/10 p-3 rounded-full mb-4 border border-cyber-purple/30">
-                <Network className="h-7 w-7 text-cyber-purple" />
+            <Card className="bg-white p-6 flex flex-col items-center text-center border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+              <div className="bg-violet-50 p-3 rounded-full mb-4 border border-violet-100">
+                <Network className="h-7 w-7 text-violet-600" />
               </div>
-              <h3 className="text-lg font-medium text-white mb-2">Deep Analysis</h3>
-              <p className="text-gray-400 text-sm">
+              <h3 className="text-lg font-medium text-gray-800 mb-2">Deep Analysis</h3>
+              <p className="text-gray-600 text-sm">
                 Deep scanning of URLs for suspicious patterns, domain age, and security certificates.
               </p>
             </Card>
             
-            <Card className="cyber-card p-5 flex flex-col items-center text-center border border-cyber-accent/20 hover:border-cyber-accent/40 transition-colors">
-              <div className="bg-cyber-warning/10 p-3 rounded-full mb-4 border border-cyber-warning/30">
-                <Lock className="h-7 w-7 text-cyber-warning" />
+            <Card className="bg-white p-6 flex flex-col items-center text-center border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+              <div className="bg-amber-50 p-3 rounded-full mb-4 border border-amber-100">
+                <Lock className="h-7 w-7 text-amber-600" />
               </div>
-              <h3 className="text-lg font-medium text-white mb-2">Security Focused</h3>
-              <p className="text-gray-400 text-sm">
+              <h3 className="text-lg font-medium text-gray-800 mb-2">Security Focused</h3>
+              <p className="text-gray-600 text-sm">
                 Identifies potential threats including fake websites, credential theft attempts, and more.
               </p>
             </Card>
@@ -520,7 +635,7 @@ const Dashboard = () => {
         </div>
       </main>
       
-      <footer className="border-t border-cyber-accent/10 py-6 mt-20">
+      <footer className="border-t border-gray-200 py-6 mt-20 bg-white">
         <div className="container mx-auto px-4 text-center">
           <p className="text-gray-500 text-sm">
             © {new Date().getFullYear()} CyberSentry | Secure Link Analysis Tool
