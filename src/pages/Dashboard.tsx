@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Search, Link as LinkIcon, AlertTriangle, LogOut, Check, Network, Lock, User, Terminal, Code, Database, FileCode } from 'lucide-react';
@@ -65,122 +64,175 @@ const analyzeUrl = (url: string) => {
         'nba.com', 'fifa.com', 'olympics.com'
       ];
       
-      // Known malicious patterns from provided URLs
+      // Enhanced with more real-world phishing patterns
       const phishingPatterns = [
         'login', 'verify', 'secure', 'auth', 'confirm', 'alert', 'warning',
         'reset', 'update', 'block', 'check', 'billing', 'unusual',
         'session', 'notice', 'credential', 'account', 'security', 'access'
       ];
       
-      // Known phishing domains from user provided data
+      // Known phishing domains - much more specific patterns
       const knownPhishingDomains = [
-        'paypal-login-987.com', 'googleverify-102-login.net', 'secure-facebook-auth333.info',
-        'login.microsoft-reset843.co', 'apple.support-update771.org', 'verify.amazon-auth-148.biz',
-        'netflix-auth.confirm962.ru', 'update-bankofamerica-check752.xyz', 'wellsfargo-login.session314.top',
-        'chase.billing-warning586.site'
-        // And many more from the provided list
+        'paypal-login', 'googleverify', 'secure-facebook', 'microsoft-reset',
+        'apple.support-update', 'verify.amazon-auth', 'netflix-auth',
+        'update-bankofamerica', 'wellsfargo-login', 'chase.billing',
+        'dropbox-account-reset', 'github-login', 'paypal.alert',
+        'verify-spotify', 'apple-auth-block', 'secure-amazon-check',
+        'login.paypal-auth', 'google-reset-account', 'facebook.verifybilling',
+        'microsoft-login-warning', 'netflix-security-check'
       ];
       
       // Initialize score and threats
-      let score = 50; // Start with a neutral score
+      let score = 70; // Start with a more neutral score that favors legitimate sites
       const threats: string[] = [];
       
-      // 1. Check if domain exactly matches known safe domains
-      const exactMatchSafeDomain = safeDomains.some(safe => domain === safe);
+      // Check for exact domain match with safe domains
+      const mainDomainWithoutSubdomain = domain.split('.').slice(-2).join('.');
+      let exactMatchSafeDomain = safeDomains.some(safe => {
+        if (safe.includes('/')) {
+          return domain === safe;
+        }
+        return domain === safe || mainDomainWithoutSubdomain === safe;
+      });
+      
+      // Check for subdomain of legitimate domains
+      const isLegitSubdomain = !exactMatchSafeDomain && safeDomains.some(safe => {
+        // Check if it's a legitimate subdomain (with proper formatting)
+        return domain.endsWith(`.${safe}`) && !domain.includes('-');
+      });
+      
+      // Exact match with known safe domains
       if (exactMatchSafeDomain) {
-        score += 45; // High confidence for exact match of safe domain
+        score += 30; // Major boost for exact match
       } 
-      // 2. Check if domain ends with a known safe domain (subdomain)
-      else if (safeDomains.some(safe => domain.endsWith(`.${safe}`))) {
-        score += 35; // Good confidence for subdomain of safe domain
+      // Legitimate subdomain
+      else if (isLegitSubdomain) {
+        score += 20; // Good boost for legitimate subdomain
       }
-      // 3. Check if domain exactly matches known malicious domain
-      else if (knownPhishingDomains.some(bad => domain.toLowerCase() === bad.toLowerCase())) {
-        score -= 45; // Severe penalty for exact match of known phishing domain
-        threats.push('Domain matches known phishing site');
-      }
-      
-      // 4. Check for hyphens in domain (common in phishing)
-      const hyphenCount = (domain.match(/-/g) || []).length;
-      if (hyphenCount > 0) {
-        score -= (hyphenCount * 5); // Penalty for each hyphen
-        if (hyphenCount > 1) {
-          threats.push('Multiple hyphens in domain (suspicious pattern)');
-        }
-      }
-      
-      // 5. Check for numbers in domain (common in phishing)
-      const containsNumbers = /\d/.test(domain);
-      if (containsNumbers) {
-        // Count the number of digits
-        const digitCount = domain.replace(/[^0-9]/g, '').length;
-        score -= (digitCount * 3); // Penalty for each digit
+      // Check for patterns of phishing domains
+      else {
+        let matches = false;
         
-        if (digitCount > 2) {
-          threats.push('Multiple numbers in domain (suspicious pattern)');
+        // Check for exact match with known phishing domains
+        for (const phishingDomain of knownPhishingDomains) {
+          if (domain.includes(phishingDomain)) {
+            score -= 40;
+            threats.push('Domain contains known phishing pattern');
+            matches = true;
+            break;
+          }
+        }
+        
+        // Check for domain pattern that combines brand names with suspicious elements
+        const brands = ['paypal', 'google', 'facebook', 'microsoft', 'apple', 'amazon', 'netflix', 
+                      'wellsfargo', 'chase', 'bankofamerica', 'dropbox', 'github'];
+        
+        // More targeted brand impersonation detection
+        for (const brand of brands) {
+          // Count suspicious elements in domain along with brand name
+          if (domain.toLowerCase().includes(brand)) {
+            // Check if it's not the legitimate domain
+            if (!exactMatchSafeDomain && !isLegitSubdomain) {
+              let suspiciousFeatures = 0;
+              
+              if (domain.includes('-')) suspiciousFeatures++;
+              if (/\d/.test(domain)) suspiciousFeatures++;
+              
+              // Check for combined patterns (brand + suspicious word)
+              for (const pattern of phishingPatterns) {
+                if (domain.toLowerCase().includes(pattern)) {
+                  suspiciousFeatures++;
+                }
+              }
+              
+              if (suspiciousFeatures >= 1) {
+                score -= 20 * suspiciousFeatures;
+                threats.push(`Suspicious ${brand} impersonation (${suspiciousFeatures} indicators)`);
+                matches = true;
+              }
+            }
+          }
+        }
+        
+        if (!matches) {
+          // General analysis for domains that aren't known phishing or safe
+          
+          // Check for hyphens in domain (common in phishing)
+          const hyphenCount = (domain.match(/-/g) || []).length;
+          if (hyphenCount > 0) {
+            score -= (hyphenCount * 10); // Higher penalty
+            if (hyphenCount > 1) {
+              threats.push('Multiple hyphens in domain (suspicious pattern)');
+            }
+          }
+          
+          // Check for numbers in domain (common in phishing)
+          const digitMatches = domain.match(/\d+/g);
+          if (digitMatches) {
+            // Count the total number of digits
+            const digitCount = domain.replace(/[^0-9]/g, '').length;
+            
+            // Check if there are sequences of 3+ digits (very suspicious)
+            const hasLongNumberSequence = digitMatches.some(match => match.length >= 3);
+            
+            if (hasLongNumberSequence) {
+              score -= 20;
+              threats.push('Suspicious number sequence in domain');
+            } else if (digitCount > 2) {
+              score -= 10;
+              threats.push('Multiple numbers in domain (suspicious pattern)');
+            } else {
+              score -= 5;
+            }
+          }
+          
+          // Check domain length (very long domains are suspicious)
+          if (domain.length > 30) {
+            score -= 15;
+            threats.push('Unusually long domain name');
+          } else if (domain.length > 20) {
+            score -= 8;
+          }
+          
+          // Check for suspicious TLDs
+          const suspiciousTlds = ['.xyz', '.top', '.info', '.site', '.biz', '.ru', '.cc', '.tk'];
+          if (suspiciousTlds.some(tld => domain.endsWith(tld))) {
+            score -= 15;
+            threats.push('Suspicious top-level domain (TLD)');
+          }
+          
+          // Check for multiple suspicious keywords in domain
+          const suspiciousKeywordCount = phishingPatterns.filter(pattern => 
+            domain.toLowerCase().includes(pattern.toLowerCase())
+          ).length;
+          
+          if (suspiciousKeywordCount >= 2) {
+            score -= 15 + (suspiciousKeywordCount * 5);
+            threats.push(`${suspiciousKeywordCount} phishing keywords detected in domain`);
+          } else if (suspiciousKeywordCount === 1) {
+            score -= 10;
+            threats.push('Suspicious keyword detected in domain');
+          }
         }
       }
       
-      // 6. Check domain length (very long domains are suspicious)
-      if (domain.length > 30) {
-        score -= 15;
-        threats.push('Unusually long domain name');
-      } else if (domain.length > 20) {
-        score -= 5;
-      }
-      
-      // 7. Check for suspicious TLDs
-      const suspiciousTlds = ['.xyz', '.top', '.info', '.site', '.biz', '.ru'];
-      if (suspiciousTlds.some(tld => domain.endsWith(tld))) {
-        score -= 10;
-        threats.push('Suspicious top-level domain (TLD)');
-      }
-      
-      // 8. Check for multiple suspicious keywords in domain
-      const suspiciousKeywordCount = phishingPatterns.filter(pattern => 
-        domain.toLowerCase().includes(pattern.toLowerCase())
-      ).length;
-      
-      if (suspiciousKeywordCount >= 3) {
-        score -= 25;
-        threats.push('Multiple phishing keywords in domain');
-      } else if (suspiciousKeywordCount > 0) {
-        score -= (suspiciousKeywordCount * 5);
-        if (suspiciousKeywordCount === 2) {
-          threats.push('Multiple suspicious keywords detected');
-        }
-      }
-      
-      // 9. Check for brand impersonation patterns
-      const brands = ['paypal', 'google', 'facebook', 'microsoft', 'apple', 'amazon', 'netflix', 
-                      'wellsfargo', 'chase', 'bankofamerica', 'dropbox', 'github', 'spotify',
-                      'instagram', 'linkedin', 'icloud'];
-      
-      for (const brand of brands) {
-        if (domain.toLowerCase().includes(brand) && !domain.startsWith(brand) && !exactMatchSafeDomain) {
-          score -= 20;
-          threats.push(`Potential ${brand} brand impersonation`);
-          break;
-        }
-      }
-      
-      // 10. Check for protocol (https is better than http)
+      // Check for protocol (https is better than http)
       if (url.startsWith('https://')) {
-        score += 5;
+        score += 10;
       } else if (url.startsWith('http://')) {
-        score -= 5;
+        score -= 10;
         threats.push('Insecure connection (HTTP)');
       }
       
       // Ensure score is within bounds
       score = Math.max(0, Math.min(100, score));
       
-      // Generate risk assessment
+      // Generate risk assessment - more balanced thresholds
       let riskLevel = "Unknown";
-      if (score >= 80) riskLevel = "Minimal Risk";
-      else if (score >= 60) riskLevel = "Low Risk";
-      else if (score >= 40) riskLevel = "Moderate Risk";
-      else if (score >= 20) riskLevel = "High Risk";
+      if (score >= 90) riskLevel = "Minimal Risk";
+      else if (score >= 75) riskLevel = "Low Risk";
+      else if (score >= 60) riskLevel = "Moderate Risk";
+      else if (score >= 40) riskLevel = "High Risk";
       else riskLevel = "Critical Risk";
       
       // Generate detailed analysis
@@ -189,13 +241,13 @@ const analyzeUrl = (url: string) => {
         sslCertificate: url.startsWith('https://') ? 'HTTPS connection present (reduced risk)' : 'HTTP connection detected (increased risk)',
         redirectChain: score < 40 ? 'Potential redirect chain detected (high risk)' : 'No suspicious redirects detected (low risk)',
         contentSafety: score < 60 ? 'Suspicious content patterns may be present (moderate risk)' : 'No suspicious content detected (low risk)',
-        phishingPatterns: suspiciousKeywordCount > 0 ? `${suspiciousKeywordCount} known phishing patterns detected (high risk)` : 'No common phishing patterns detected (low risk)',
+        phishingPatterns: threats.length > 0 ? `${threats.length} security concerns detected (${riskLevel})` : 'No common phishing patterns detected (low risk)',
       };
       
       resolve({
         score,
         threats,
-        isSafe: score >= 70,
+        isSafe: score >= 65, // More balanced threshold that doesn't penalize legitimate sites
         details: {
           domain,
           registered: score < 50 ? '2023-05-15' : '2010-06-22',
@@ -319,11 +371,13 @@ const Dashboard = () => {
       setScanProgress(0);
       toast.info('Initiating security scan...');
       
-      // Simulate progress for better UX
+      // Improved progress simulation for better UX
       const progressInterval = setInterval(() => {
         setScanProgress(prev => {
-          const newProgress = prev + Math.random() * 10;
-          return newProgress >= 90 ? 90 : newProgress;
+          // Make the progress more smooth and realistic
+          const increment = Math.random() * 5 + (prev < 30 ? 5 : prev < 60 ? 3 : 1);
+          const newProgress = prev + increment;
+          return newProgress >= 95 ? 95 : newProgress;
         });
       }, 200);
       
