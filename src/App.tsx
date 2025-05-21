@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "./integrations/supabase/client";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
@@ -46,10 +47,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   if (loading) {
-    // You can replace this with a loading spinner
-    return <div className="min-h-screen bg-cyber-dark flex items-center justify-center">
-      <div className="h-8 w-8 border-4 border-cyber-accent border-t-transparent rounded-full animate-spin"></div>
-    </div>;
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="h-8 w-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -69,6 +71,14 @@ const App = () => (
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route 
+            path="/profile-setup" 
+            element={
+              <ProtectedRoute>
+                <ProfileSetup />
+              </ProtectedRoute>
+            } 
+          />
           <Route 
             path="/dashboard" 
             element={
