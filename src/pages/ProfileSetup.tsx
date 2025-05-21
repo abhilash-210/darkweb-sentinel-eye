@@ -1,177 +1,173 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Shield, Check } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { supabase } from "@/integrations/supabase/client";
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Terminal, Shield, UserCheck, LogOut } from 'lucide-react';
 
 const ProfileSetup = () => {
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const navigate = useNavigate();
-
+  
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      
       if (!session) {
         navigate('/login');
         return;
       }
+      
       setUser(session.user);
     };
     
     checkAuth();
   }, [navigate]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  
+  const handleProfileSetup = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!fullName.trim()) {
+    if (!fullName) {
       toast.error('Please enter your full name');
       return;
     }
     
-    setLoading(true);
+    if (!user) {
+      toast.error('You need to be logged in to complete your profile');
+      return;
+    }
     
     try {
-      // Update user profile in Supabase
+      setLoading(true);
+      
       const { error } = await supabase
         .from('profiles')
         .upsert({ 
           id: user.id,
-          full_name: fullName,
-          updated_at: new Date().toISOString(),
+          username: fullName
         });
-
+      
       if (error) throw error;
       
-      toast.success('Identity verified. Welcome to CyberSentry.');
+      toast.success('Profile setup complete');
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(`Profile update failed: ${error.message}`);
+      toast.error(error.message || 'An error occurred during profile setup');
     } finally {
       setLoading(false);
     }
   };
-
-  // Typing animation effect
-  const [typedText, setTypedText] = useState('');
-  const fullText = 'VERIFY YOUR IDENTITY';
   
-  useEffect(() => {
-    let i = 0;
-    const typingInterval = setInterval(() => {
-      if (i <= fullText.length) {
-        setTypedText(fullText.substring(0, i));
-        i++;
-      } else {
-        clearInterval(typingInterval);
-      }
-    }, 100);
-    
-    return () => clearInterval(typingInterval);
-  }, []);
-
-  // Matrix code rain effect
-  const generateMatrixChars = () => {
-    return Array.from({ length: 20 }, (_, i) => {
-      const randomChar = String.fromCharCode(Math.floor(Math.random() * 26) + 65);
-      const delay = Math.random() * 5;
-      const duration = 2 + Math.random() * 3;
-      
-      return (
-        <div 
-          key={i}
-          className="absolute text-green-500 opacity-50 animate-matrix-rain"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 20}%`,
-            animationDelay: `${delay}s`,
-            animationDuration: `${duration}s`,
-            fontSize: `${Math.random() * 10 + 10}px`
-          }}
-        >
-          {randomChar}
-        </div>
-      );
-    });
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
   };
-
+  
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen matrix-bg p-4 relative overflow-hidden">
-      {/* Matrix code effect in background */}
-      <div className="absolute inset-0 opacity-50 pointer-events-none">
-        {generateMatrixChars()}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black matrix-bg">
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="matrix-rain"></div>
       </div>
       
-      <div className="bg-black/80 w-full max-w-md p-8 z-10 rounded-lg shadow-lg border border-green-500/30 terminal-window">
-        <div className="terminal-header mb-4">
-          <div className="terminal-circle bg-red-500/70"></div>
-          <div className="terminal-circle bg-yellow-500/70"></div>
-          <div className="terminal-circle bg-green-500/70"></div>
-          <div className="ml-3 text-green-400 text-xs">/usr/bin/identity_verification</div>
+      <div className="w-full max-w-md px-4">
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-4">
+            <Shield className="h-12 w-12 text-green-500 animate-pulse-glow" />
+          </div>
+          <h1 className="text-3xl font-bold font-mono text-green-400 hacker-text mb-1">CYBERSENTRY</h1>
+          <p className="text-green-500/60 text-sm font-mono">SECURE NETWORK PROTOCOL</p>
         </div>
         
-        <div className="flex justify-center mb-6">
-          <Shield className="h-12 w-12 text-green-500 animate-pulse-glow" />
-        </div>
-        
-        <h1 className="text-2xl font-bold text-center mb-4 hacker-text">
-          <span>&gt; </span>
-          <span>{typedText}</span>
-          <span className="inline-block animate-blink">_</span>
-        </h1>
-        
-        <div className="text-green-400 text-center mb-8 text-sm border-b border-green-500/30 pb-4">
-          <p>Before proceeding, we need to verify your identity.</p>
-          <p className="mt-2 text-green-300">Please provide your full name.</p>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label htmlFor="fullName" className="text-sm font-medium text-green-400 block flex items-center">
-              <User className="h-4 w-4 mr-2" />
-              <span>AGENT_IDENTITY [full_name]:</span>
-            </label>
-            <Input
-              id="fullName"
-              type="text"
-              placeholder="Enter your full name"
-              className="cyber-input w-full"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-            />
+        <Card className="border border-green-500/30 bg-black/80 terminal-window">
+          <div className="terminal-header">
+            <div className="terminal-circle bg-red-500/70"></div>
+            <div className="terminal-circle bg-yellow-500/70"></div>
+            <div className="terminal-circle bg-green-500/70"></div>
+            <div className="ml-2 text-sm text-green-400/80 font-mono">setup.sh</div>
           </div>
           
-          <div className="pt-4">
-            <Button
-              disabled={loading}
-              type="submit"
-              className="cyber-button w-full flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <div className="h-5 w-5 border-2 border-t-transparent border-black rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  <Check className="h-5 w-5" />
-                  <span>CONFIRM IDENTITY</span>
-                </>
-              )}
-            </Button>
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-green-400 font-mono flex items-center gap-2 mb-5">
+              <Terminal className="h-5 w-5" />
+              <span>OPERATOR CONFIGURATION</span>
+            </h2>
+            
+            <div className="mb-4 p-3 border border-green-500/30 rounded bg-green-900/10">
+              <p className="text-green-400 font-mono text-sm">
+                <span className="text-green-500">[SYSTEM]:</span> Complete your operator profile to access the CyberSentry network.
+              </p>
+            </div>
+            
+            <form onSubmit={handleProfileSetup} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-green-400 font-mono">OPERATOR NAME</Label>
+                <div className="relative">
+                  <Input
+                    id="fullName"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Full Name"
+                    className="bg-black/60 border-green-500/30 text-green-400 font-mono cyber-input focus:border-green-400"
+                  />
+                  <div className="absolute right-2 top-2.5 h-1 w-1 rounded-full bg-green-500 animate-pulse"></div>
+                </div>
+              </div>
+              
+              <Button 
+                type="submit" 
+                disabled={loading}
+                className="w-full cyber-button bg-green-600 hover:bg-green-700 text-black font-bold font-mono"
+              >
+                {loading ? (
+                  <>
+                    <div className="h-4 w-4 border-2 border-t-transparent border-black rounded-full animate-spin mr-2"></div>
+                    <span>PROCESSING...</span>
+                  </>
+                ) : (
+                  <>
+                    <UserCheck className="mr-2 h-4 w-4" />
+                    <span>COMPLETE SETUP</span>
+                  </>
+                )}
+              </Button>
+              
+              <div className="text-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleLogout}
+                  className="text-green-400 border-green-500/30 hover:bg-green-900/20 font-mono"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>DISCONNECT</span>
+                </Button>
+              </div>
+            </form>
+            
+            <div className="mt-6 border-t border-green-500/20 pt-4">
+              <div className="text-xs text-green-500/50 font-mono">
+                <div className="mb-2">&gt; Profile data encrypted with military-grade encryption</div>
+                <div>&gt; System v2.1.0 | Last updated: 2025-05-21</div>
+              </div>
+            </div>
           </div>
-        </form>
-        
-        <div className="mt-6 p-4 bg-green-900/20 rounded border border-green-500/30 text-xs text-green-400">
-          <p className="font-mono">
-            &gt; All information is encrypted using AES-256 protocol.
-          </p>
-          <p className="font-mono mt-1">
-            &gt; Your identity will be verified through our secure network.
-          </p>
+        </Card>
+      </div>
+      
+      {/* Code-like animation at the bottom */}
+      <div className="fixed bottom-0 left-0 right-0 h-16 overflow-hidden pointer-events-none">
+        <div className="text-green-500/30 text-xs font-mono whitespace-nowrap animate-scroll">
+          {Array(100).fill(0).map((_, i) => (
+            <span key={i} className="mr-4">
+              {Math.random().toString(36).substring(2, 10)}_{Math.random().toString(16).substring(2, 6)}
+            </span>
+          ))}
         </div>
       </div>
     </div>

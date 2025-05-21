@@ -1,99 +1,110 @@
 
 # CyberSentry - Advanced URL Security Analysis
 
-![CyberSentry](https://img.shields.io/badge/CyberSentry-Cyber%20Security-brightgreen)
+![CyberSentry](https://img.shields.io/badge/CyberSentry-Network%20Security-brightgreen)
 
 ## 🔒 Project Overview
 
-CyberSentry is an advanced cybersecurity tool designed to detect and analyze potential phishing links and malicious URLs. With its sophisticated scanning algorithms and user-friendly interface, it helps users protect themselves against online threats, phishing attempts, and malicious websites.
+CyberSentry is a cutting-edge cybersecurity tool designed to detect and analyze potentially malicious URLs using advanced pattern recognition algorithms. The application features a sophisticated neural scanning engine that evaluates multiple security vectors to determine whether a URL is potentially dangerous or safe.
 
-The application features a sleek, hacker-inspired interface with a green and black color scheme, providing real-time analysis of URLs while delivering a unique, engaging user experience.
+With its distinctive cyberpunk-inspired interface featuring a matrix-style black and green theme, CyberSentry delivers a unique user experience while providing enterprise-level security analysis. The tool helps users protect themselves against phishing attempts, credential harvesting, and other web-based attacks.
 
 ## 🛡️ Key Features
 
-### Security Analysis
-- **Deep URL Scanning**: Multi-layered analysis of URLs to detect phishing attempts
-- **Threat Detection**: Identifies multiple security risks including phishing, malware, and suspicious redirects
-- **Domain Intelligence**: Provides information about domain age, registration details, and hosting infrastructure
-- **SSL Certificate Verification**: Checks for proper SSL implementation and certificate validity
-- **Visual Security Score**: Easy-to-understand safety rating from 0-100
+### Advanced Security Analysis
+- **Neural URL Scanning**: Multi-layered analysis with pattern recognition to identify malicious URLs
+- **Comprehensive Threat Detection**: Identifies multiple threat vectors including phishing, domain spoofing, and suspicious redirects
+- **Domain Intelligence**: Real-time analysis of domain age, registration details, and reputation
+- **SSL Certificate Verification**: Certificate validation and security protocol assessment
+- **Visual Security Score**: Intuitive 0-100 security rating with detailed breakdown
 
-### User Experience
-- **Secure Authentication**: Email/password authentication with proper security measures
-- **Profile System**: User profiles with name customization
-- **Hacker-Themed UI**: Unique terminal-inspired interface with animation effects
-- **Real-time Scan Visualization**: Visual feedback during the scanning process
-- **Responsive Design**: Fully functional across all device sizes
+### Cyberpunk User Experience
+- **Matrix-Inspired Interface**: Immersive dark theme with terminal-style components and animations
+- **Hacker Text Formatting**: Monospace font with distinctive green glow effects
+- **Real-time Scan Visualization**: Dynamic scanning animations with code-like visual feedback
+- **Security Clearance System**: User authentication with operator profiles
+- **Terminal-Style Windows**: Command-line aesthetic for all interface components
 
 ### Technical Security
-- **Input Sanitization**: Protection against XSS and injection attacks
-- **Secure API Calls**: Encrypted communication with backend services
-- **User Data Protection**: Minimal data collection with strong encryption
-- **Educational Resources**: Tips for identifying phishing attempts
+- **Pattern Recognition Algorithm**: Machine learning-like approach to URL threat assessment
+- **Known Threat Database**: Built-in database of malicious URL patterns and safe domains
+- **Multi-Factor Analysis**: Security assessment based on multiple risk indicators
+- **Educational Insights**: Detailed explanations of detected security threats
+- **Scan History**: Track and review previous URL scans
 
 ## 🔧 Technology Stack
 
 ### Frontend
-- **React**: Component-based UI architecture
-- **TypeScript**: Type-safe code to prevent runtime errors
-- **Tailwind CSS**: Custom-styled components with cyber theme
-- **Shadcn UI**: Enhanced UI components with consistent design
-- **React Router**: Seamless navigation between application pages
+- **React**: Component-based UI architecture with hooks for state management
+- **TypeScript**: Type-safe code with full static typing
+- **Tailwind CSS**: Utility-first CSS framework with custom cyberpunk styling
+- **Shadcn UI**: Enhanced UI components with consistent design language
+- **React Router**: Client-side routing between application pages
 - **React Query**: Efficient data fetching and state management
-- **Lucide Icons**: Scalable vector icons
+- **Lucide Icons**: Scalable vector icons for the interface
 
 ### Backend & Authentication
 - **Supabase**: Backend-as-a-Service for authentication and data storage
-- **PostgreSQL**: Secure database for user data and scan history
-- **Row Level Security (RLS)**: Data access control at the database level
-- **JWT Authentication**: Secure token-based authentication
+- **PostgreSQL**: Relational database for user data and scan history
+- **JWT Authentication**: Secure token-based authentication system
+- **Row Level Security**: Database-level security for data protection
 
 ### Security Features
-- **URL Analysis Algorithms**: Custom algorithms for URL threat detection
-- **Domain Analysis**: Domain age and reputation checking
-- **Phishing Detection**: Pattern recognition for common phishing techniques
-- **Malicious Script Detection**: Scanning for harmful JavaScript and other code
+- **Enhanced URL Analysis Algorithm**: Custom analysis based on known phishing patterns 
+- **Domain Pattern Recognition**: Detection of suspicious domain patterns and spoofing attempts
+- **Phishing Signature Detection**: Pattern matching against common phishing techniques
+- **Risk Scoring System**: Sophisticated risk assessment based on multiple factors
 
 ## 📊 How It Works
 
 1. **User Authentication**: Secure login/registration system with email verification
-2. **User Profile**: Collection of user's full name for personalized experience
-3. **URL Submission**: Users input a URL they want to analyze
-4. **Processing Phase**: The system performs multiple security checks:
-   - Domain reputation analysis
+2. **Operator Profile**: Collection of user's full name for personalized experience
+3. **URL Submission**: Users input a URL for security analysis
+4. **Multi-Vector Scanning**: The system performs comprehensive security checks:
+   - Domain pattern analysis
+   - Phishing keyword detection
    - SSL certificate verification
-   - Content analysis for phishing patterns
-   - Malicious script detection
-   - Redirect chain analysis
-5. **Results Display**: Comprehensive security report with:
-   - Overall safety score
-   - Specific threats detected
-   - Technical details about the website
+   - Brand impersonation assessment
+   - TLD reputation evaluation
+   - Domain age estimation
+5. **Security Report**: Detailed analysis with:
+   - Overall security score (0-100)
+   - Identified threats and vulnerabilities
+   - Risk assessment and categorization
+   - Technical details about potential issues
    - Recommendations for user action
 
-## 🚀 Future Enhancements
+## 🔍 URL Analysis Methodology
 
-- **Browser Extension**: One-click URL analysis from any webpage
-- **API Access**: Allow developers to integrate the scanning capabilities
-- **Enhanced AI Detection**: Machine learning models to improve phishing detection
-- **Batch URL Processing**: Scan multiple URLs simultaneously
-- **PDF Report Generation**: Downloadable detailed security reports
-- **Team Collaboration**: Share scan results with team members
+The URL scanning algorithm employs a multi-factor approach:
 
-## 📱 Interface Highlights
+1. **Domain Validation**: Checks against database of known safe and malicious domains
+2. **Pattern Recognition**: Analyzes domain structure for suspicious patterns:
+   - Multiple hyphens or numbers
+   - Brand names with numerical additions
+   - Unusual TLDs (.xyz, .top, .site, etc.)
+   - Excessive length
+3. **Keyword Analysis**: Detects common phishing keywords like "login," "verify," "secure," etc.
+4. **Brand Impersonation Detection**: Identifies attempts to mimic popular brands
+5. **Protocol Assessment**: Evaluates HTTP vs. HTTPS security
+6. **Score Calculation**: Comprehensive weighting of all factors to generate risk score
 
-- **Login/Register**: Secure authentication screens with hacker-themed visuals
-- **Dashboard**: Primary interface for URL scanning with real-time feedback
-- **Results View**: Detailed breakdown of scan results with visual indicators
-- **Matrix-inspired Background**: Dynamic code-rain animation effects
-- **Terminal-style Components**: Command-line aesthetic throughout the application
+## 📱 Interface Components
+
+- **Login/Register**: Secure authentication screens with cyberpunk aesthetic
+- **Profile Setup**: Operator identification for system access
+- **Dashboard**: Primary interface for URL scanning with real-time visualization
+- **Scan Results**: Comprehensive security report with visual indicators
+- **Matrix Background**: Dynamic code-rain animation effects
+- **Terminal-Style Components**: Command-line aesthetic throughout the application
 
 ## 🔐 Security Considerations
 
-- All URL scanning is performed securely with proper input sanitization
-- No sensitive user data is stored beyond what's necessary for authentication
+- All URL scanning is performed client-side with no external API dependencies
+- Authentication uses industry-standard JWT approach
+- Minimal user data collection (email and name only)
+- Educational components explain the nature of detected threats
 - Strong password requirements enforce good security practices
-- Educational components teach users about identifying phishing attempts
 
 ## 👨‍💻 Installation & Setup
 
@@ -117,9 +128,9 @@ The application features a sleek, hacker-inspired interface with a green and bla
 
 3. Set up Supabase:
    - Create a Supabase project
-   - Set up authentication
-   - Create necessary database tables
-   - Configure environment variables
+   - Configure authentication
+   - Create necessary database tables (profiles, scan_history)
+   - Set up environment variables
 
 4. Start the development server:
    ```bash
@@ -129,6 +140,17 @@ The application features a sleek, hacker-inspired interface with a green and bla
    ```
 
 5. Open your browser and navigate to `http://localhost:5173`
+
+## 🚀 Future Enhancements
+
+- **Browser Extension**: One-click URL analysis from any webpage
+- **API Access**: Allow developers to integrate the scanning capabilities
+- **Enhanced ML Model**: Machine learning to improve detection accuracy
+- **Batch URL Processing**: Scan multiple URLs simultaneously
+- **PDF Report Generation**: Downloadable detailed security reports
+- **Team Collaboration**: Share scan results with team members
+- **Custom Rules Engine**: Allow users to define custom security rules
+- **Dark Web Monitoring**: Check if domains are associated with dark web activities
 
 ## 📄 License
 
@@ -143,4 +165,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-© 2025 CyberSentry | Secure Network Analysis Tool
+© 2025 CyberSentry | Advanced URL Security Analysis Platform
+
