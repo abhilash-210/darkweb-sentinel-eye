@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Search, Link as LinkIcon, AlertTriangle, LogOut, Check, Network, Lock, User, Terminal, Code, Database, FileCode, ExternalLink, ChevronRight, CheckCircle2, XCircle } from 'lucide-react';
@@ -19,6 +20,7 @@ const Dashboard = () => {
   const [nameDialog, setNameDialog] = useState(false);
   const [fullName, setFullName] = useState('');
   const [userFullName, setUserFullName] = useState('');
+  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   
@@ -161,6 +163,7 @@ const Dashboard = () => {
     setUrl('');
     setScanResult(null);
     setScanProgress(0);
+    setShowTechnicalDetails(false);
   };
 
   const getScoreColor = (score: number) => {
@@ -238,11 +241,11 @@ const Dashboard = () => {
           </div>
           
           <div className="flex items-center gap-4 flex-wrap">
-            {/* Highlighted Username Display */}
-            <div className="flex items-center gap-2 bg-green-900/30 py-2 px-4 border-2 border-green-500 rounded-md shadow-lg shadow-green-900/20 pulse-highlight">
-              <User className="h-5 w-5 text-green-400" />
+            {/* Enhanced Highlighted Username Display */}
+            <div className="flex items-center gap-2 bg-green-900/30 py-2 px-4 border-2 border-green-500 rounded-md shadow-lg shadow-green-900/20 pulse-highlight animate-pulse-subtle">
+              <User className="h-5 w-5 text-green-500" />
               <span className="text-sm md:text-base text-green-300 font-mono font-bold">
-                {userFullName || user?.email?.split('@')[0]}
+                OPERATOR: <span className="text-green-400">{userFullName || user?.email?.split('@')[0]}</span>
               </span>
             </div>
             
@@ -498,6 +501,8 @@ const Dashboard = () => {
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {scanResult.factorResults && Object.entries(scanResult.factorResults).map(([key, value]: [string, any]) => {
+                        if (key === 'mlClassification') return null; // Skip ML classification as we show it separately
+                        
                         const isWarning = value.status === 'Warning';
                         const isFail = value.status === 'Fail';
                         
@@ -511,7 +516,12 @@ const Dashboard = () => {
                               <p className="text-sm font-medium text-green-400 font-mono capitalize">
                                 {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
                               </p>
-                              {getFactorStatusIcon(value.status)}
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-green-400/70">
+                                  {value.score ? `${value.score}/100` : ''}
+                                </span>
+                                {getFactorStatusIcon(value.status)}
+                              </div>
                             </div>
                             <p className="text-sm text-green-300/80 font-mono">{value.analysis}</p>
                           </div>
@@ -522,6 +532,45 @@ const Dashboard = () => {
                 </div>
               </div>
               
+              {/* ML Classification Section */}
+              {scanResult.factorResults && scanResult.factorResults.mlClassification && (
+                <div className="mt-6 p-4 bg-green-900/20 rounded-sm border border-green-500/30">
+                  <h4 className="text-green-400 font-medium mb-3 flex items-center gap-2 font-mono">
+                    <Network className="h-5 w-5 text-green-500" /> AI MODEL ANALYSIS
+                  </h4>
+                  
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-start gap-2">
+                      <div className="h-2 w-2 bg-green-500 rounded-full mt-2"></div>
+                      <div>
+                        <p className="text-green-400 font-mono text-sm font-medium">
+                          Prediction: <span className="text-green-300">{scanResult.factorResults.mlClassification.prediction}</span>
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <div className="h-2 w-2 bg-green-500 rounded-full mt-2"></div>
+                      <div>
+                        <p className="text-green-400 font-mono text-sm font-medium">
+                          Confidence: <span className="text-green-300">{scanResult.factorResults.mlClassification.mlConfidence}%</span>
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <div className="h-2 w-2 bg-green-500 rounded-full mt-2"></div>
+                      <div>
+                        <p className="text-green-400 font-mono text-sm font-medium">
+                          Analysis: <span className="text-green-300">{scanResult.factorResults.mlClassification.analysis}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Security Threats Section */}
               {scanResult.threats && scanResult.threats.length > 0 && (
                 <div className="mt-6 p-4 bg-red-900/20 rounded-sm border border-red-500/30">
                   <h4 className="text-red-400 font-medium mb-3 flex items-center gap-2 font-mono">
@@ -535,6 +584,183 @@ const Dashboard = () => {
                       </li>
                     ))}
                   </ul>
+                </div>
+              )}
+              
+              {/* Technical Details Toggle */}
+              {scanResult.technicalDetails && (
+                <div className="mt-6">
+                  <button
+                    onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
+                    className="w-full flex items-center justify-between p-3 bg-green-900/20 rounded-sm border border-green-500/30 text-green-400 font-mono hover:bg-green-900/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Code className="h-5 w-5 text-green-500" />
+                      <span className="font-medium">ADVANCED TECHNICAL DETAILS</span>
+                    </div>
+                    <ChevronRight className={`h-5 w-5 transition-transform ${showTechnicalDetails ? 'rotate-90' : ''}`} />
+                  </button>
+                  
+                  {showTechnicalDetails && (
+                    <div className="mt-3 p-4 bg-black/80 border border-green-500/30 rounded-sm font-mono text-xs text-green-300 overflow-x-auto">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* URL Details */}
+                        <div>
+                          <h5 className="text-green-400 font-medium mb-2">URL ANALYSIS</h5>
+                          <ul className="space-y-2 text-green-300/80">
+                            <li><span className="text-green-500">Protocol:</span> {scanResult.technicalDetails.url.protocol}</li>
+                            <li><span className="text-green-500">Hostname:</span> {scanResult.technicalDetails.url.hostname}</li>
+                            <li><span className="text-green-500">Path:</span> {scanResult.technicalDetails.url.pathname || '/'}</li>
+                            <li><span className="text-green-500">Path Depth:</span> {scanResult.technicalDetails.url.pathDepth}</li>
+                            <li><span className="text-green-500">Query String:</span> {scanResult.technicalDetails.url.queryString || 'None'}</li>
+                            <li><span className="text-green-500">Fragment:</span> {scanResult.technicalDetails.url.fragment || 'None'}</li>
+                            <li><span className="text-green-500">Port:</span> {scanResult.technicalDetails.url.port}</li>
+                          </ul>
+                        </div>
+                        
+                        {/* Domain Details */}
+                        <div>
+                          <h5 className="text-green-400 font-medium mb-2">DOMAIN ANALYSIS</h5>
+                          <ul className="space-y-2 text-green-300/80">
+                            <li><span className="text-green-500">Domain:</span> {scanResult.technicalDetails.domain.name}</li>
+                            <li><span className="text-green-500">TLD:</span> {scanResult.technicalDetails.domain.tld}</li>
+                            <li><span className="text-green-500">Subdomains:</span> {scanResult.technicalDetails.domain.subdomains}</li>
+                            <li><span className="text-green-500">Length:</span> {scanResult.technicalDetails.domain.length} characters</li>
+                            <li><span className="text-green-500">Has Numbers:</span> {scanResult.technicalDetails.domain.hasNumbers ? 'Yes' : 'No'}</li>
+                            <li><span className="text-green-500">Has Dashes:</span> {scanResult.technicalDetails.domain.hasDashes ? 'Yes' : 'No'}</li>
+                            <li><span className="text-green-500">Entropy:</span> {scanResult.technicalDetails.domain.entropy}</li>
+                          </ul>
+                        </div>
+                        
+                        {/* Risk Factors */}
+                        <div className="md:col-span-2">
+                          <h5 className="text-green-400 font-medium mb-2">RISK FACTORS</h5>
+                          
+                          {/* Suspicious Patterns */}
+                          <div className="mb-3">
+                            <h6 className="text-green-500 mb-1">SUSPICIOUS PATTERNS</h6>
+                            {scanResult.technicalDetails.riskFactors.suspiciousPatterns.length > 0 ? (
+                              <div className="flex flex-wrap gap-2">
+                                {scanResult.technicalDetails.riskFactors.suspiciousPatterns.map((pattern: string, idx: number) => (
+                                  <span key={idx} className="px-2 py-0.5 bg-red-900/30 border border-red-500/30 rounded text-xxs">
+                                    {pattern}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-green-300/70">No suspicious patterns detected</span>
+                            )}
+                          </div>
+                          
+                          {/* High Risk Terms */}
+                          <div className="mb-3">
+                            <h6 className="text-green-500 mb-1">HIGH RISK TERMS</h6>
+                            {Object.keys(scanResult.technicalDetails.riskFactors.highRiskTerms).length > 0 ? (
+                              <div className="flex flex-wrap gap-2">
+                                {Object.entries(scanResult.technicalDetails.riskFactors.highRiskTerms).map(([term, score]: [string, any], idx: number) => (
+                                  <span key={idx} className="px-2 py-0.5 bg-red-900/30 border border-red-500/30 rounded text-xxs">
+                                    {term}: {score}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-green-300/70">No high risk terms detected</span>
+                            )}
+                          </div>
+                          
+                          {/* Unusual Structure */}
+                          <div className="mb-3">
+                            <h6 className="text-green-500 mb-1">UNUSUAL STRUCTURE</h6>
+                            {scanResult.technicalDetails.riskFactors.unusualStructure.length > 0 ? (
+                              <ul className="list-disc pl-5 text-green-300/80">
+                                {scanResult.technicalDetails.riskFactors.unusualStructure.map((issue: string, idx: number) => (
+                                  <li key={idx}>{issue}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <span className="text-green-300/70">No unusual structure detected</span>
+                            )}
+                          </div>
+                          
+                          {/* Encoded Content */}
+                          <div>
+                            <h6 className="text-green-500 mb-1">ENCODED CONTENT</h6>
+                            {scanResult.technicalDetails.riskFactors.encodedContent.length > 0 ? (
+                              <ul className="list-disc pl-5 text-green-300/80">
+                                {scanResult.technicalDetails.riskFactors.encodedContent.map((encoding: string, idx: number) => (
+                                  <li key={idx}>{encoding}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <span className="text-green-300/70">No encoded content detected</span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* ML Analysis */}
+                        <div className="md:col-span-2">
+                          <h5 className="text-green-400 font-medium mb-2">ML ANALYSIS</h5>
+                          
+                          {/* Feature Importance */}
+                          <div className="mb-3">
+                            <h6 className="text-green-500 mb-1">FEATURE IMPORTANCE</h6>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                              {Object.entries(scanResult.technicalDetails.mlAnalysis.featureImportance).map(([feature, data]: [string, any]) => (
+                                <div key={feature} className="bg-green-900/20 p-2 rounded border border-green-500/30">
+                                  <div className="text-green-400">{feature.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</div>
+                                  <div className="text-xs text-green-300/80">
+                                    <div>Weight: {data.weight}</div>
+                                    <div>Score: {data.score}</div>
+                                    <div>Contribution: {data.contribution.toFixed(2)}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Confidence Intervals */}
+                          <div className="mb-3">
+                            <h6 className="text-green-500 mb-1">CONFIDENCE INTERVALS</h6>
+                            <div className="bg-green-900/20 p-2 rounded border border-green-500/30 grid grid-cols-3">
+                              <div>
+                                <div className="text-green-400">Lower Bound</div>
+                                <div className="text-green-300/80">{scanResult.technicalDetails.mlAnalysis.confidenceIntervals.lowerBound}</div>
+                              </div>
+                              <div>
+                                <div className="text-green-400">Upper Bound</div>
+                                <div className="text-green-300/80">{scanResult.technicalDetails.mlAnalysis.confidenceIntervals.upperBound}</div>
+                              </div>
+                              <div>
+                                <div className="text-green-400">Confidence</div>
+                                <div className="text-green-300/80">{scanResult.technicalDetails.mlAnalysis.confidenceIntervals.confidence}%</div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Decision Explanation */}
+                          <div>
+                            <h6 className="text-green-500 mb-1">MODEL DECISION</h6>
+                            <div className="bg-green-900/20 p-2 rounded border border-green-500/30">
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <div className="text-green-400">Decision</div>
+                                  <div className="text-green-300/80">{scanResult.technicalDetails.mlAnalysis.modelDecision.decision}</div>
+                                </div>
+                                <div>
+                                  <div className="text-green-400">Confidence Level</div>
+                                  <div className="text-green-300/80">{scanResult.technicalDetails.mlAnalysis.modelDecision.confidenceLevel}</div>
+                                </div>
+                              </div>
+                              <div className="mt-2">
+                                <div className="text-green-400">Explanation</div>
+                                <div className="text-green-300/80">{scanResult.technicalDetails.mlAnalysis.modelDecision.explanation}</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               
@@ -635,6 +861,20 @@ const Dashboard = () => {
             0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+          }
+          
+          .animate-pulse-subtle {
+            animation: pulseSubtle 3s infinite;
+          }
+          
+          @keyframes pulseSubtle {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.9; }
+          }
+          
+          .text-xxs {
+            font-size: 0.6rem;
           }
         }
         `}
