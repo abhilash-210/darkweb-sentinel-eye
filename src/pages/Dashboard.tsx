@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Search, Link as LinkIcon, AlertTriangle, LogOut, Check, Network, Lock, User, Terminal, Code, Database, FileCode, ExternalLink, ChevronRight, CheckCircle2, XCircle } from 'lucide-react';
@@ -617,7 +616,8 @@ const Dashboard = () => {
       </footer>
       
       {/* Add mobile-specific CSS */}
-      <style jsx>{`
+      <style>
+        {`
         @media (max-width: 768px) {
           .matrix-bg {
             background-attachment: scroll;
@@ -637,7 +637,8 @@ const Dashboard = () => {
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
           }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
