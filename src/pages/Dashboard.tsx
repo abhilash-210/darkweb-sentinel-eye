@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Dashboard = () => {
   const [url, setUrl] = useState('');
@@ -20,6 +21,7 @@ const Dashboard = () => {
   const [fullName, setFullName] = useState('');
   const [userFullName, setUserFullName] = useState('');
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   
   // Check if user is logged in and handle name collection
   useEffect(() => {
@@ -84,7 +86,7 @@ const Dashboard = () => {
       
       setUserFullName(fullName);
       setNameDialog(false);
-      toast.success('Welcome to CyberSentry!');
+      toast.success('Welcome to PhishGuard!');
     } catch (error: any) {
       toast.error(`Error saving name: ${error.message}`);
     }
@@ -230,46 +232,50 @@ const Dashboard = () => {
       
       {/* Header */}
       <header className="border-b border-green-500/30 bg-black sticky top-0 z-30 digital-scan backdrop-blur-sm">
-        <div className="container mx-auto py-4 px-4 flex justify-between items-center">
+        <div className="container mx-auto py-4 px-4 flex justify-between items-center flex-wrap gap-2">
           <div className="flex items-center space-x-3">
             <Shield className="h-7 w-7 text-green-500 animate-pulse-glow" />
-            <h1 className="text-2xl font-mono font-bold text-green-400 hacker-text">CYBERSENTRY</h1>
+            <h1 className="text-xl md:text-2xl font-mono font-bold text-green-400 hacker-text">PHISHGUARD</h1>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-black/80 py-1 px-3 border border-green-500/30 rounded shadow-lg shadow-green-900/20">
-              <Code className="h-4 w-4 text-green-500" />
-              <span className="text-sm text-green-300 font-mono">
-                {userFullName || user?.email}
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Highlighted Username Display */}
+            <div className="flex items-center gap-2 bg-green-900/30 py-2 px-4 border-2 border-green-500 rounded-md shadow-lg shadow-green-900/20 pulse-highlight">
+              <User className="h-5 w-5 text-green-400" />
+              <span className="text-sm md:text-base text-green-300 font-mono font-bold">
+                {userFullName || user?.email?.split('@')[0]}
               </span>
             </div>
+            
             <Button 
               variant="outline" 
               onClick={handleLogout}
               className="text-green-400 border-green-500/50 hover:bg-green-500/10 flex items-center gap-2 font-mono shadow-lg shadow-green-900/10"
+              size={isMobile ? "sm" : "default"}
             >
               <LogOut className="h-4 w-4" />
-              <span>LOGOUT</span>
+              <span>{isMobile ? '' : 'LOGOUT'}</span>
             </Button>
           </div>
         </div>
       </header>
       
-      <main className="container mx-auto py-10 px-4">
-        <div className="text-center mb-12 relative">
+      <main className="container mx-auto py-6 md:py-10 px-3 md:px-4">
+        <div className="text-center mb-6 md:mb-12 relative">
           <div className="absolute inset-0 -z-10 bg-gradient-radial from-green-500/10 to-transparent rounded-xl"></div>
-          <h1 className="text-4xl font-bold mb-4 text-green-400 hacker-text font-mono">
-            <span className="terminal-text">CYBERSECURITY THREAT DETECTOR</span>
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-green-400 hacker-text font-mono">
+            <span className="terminal-text">URL SECURITY SCANNER</span>
           </h1>
-          <p className="text-green-300 max-w-2xl mx-auto font-mono opacity-80">
+          <p className="text-green-300 max-w-2xl mx-auto font-mono opacity-80 text-sm md:text-base px-2">
             [ENTER TARGET URL FOR ADVANCED SECURITY ANALYSIS]
-            <br />
-            SYSTEM WILL SCAN FOR MALICIOUS PATTERNS AND VULNERABILITIES
+            <br className="hidden md:block" />
+            <span className="md:hidden">SCAN FOR MALICIOUS PATTERNS</span>
+            <span className="hidden md:inline">SYSTEM WILL SCAN FOR MALICIOUS PATTERNS AND VULNERABILITIES</span>
           </p>
         </div>
         
         <div className="max-w-4xl mx-auto">
-          <form onSubmit={handleScan} className="bg-black/90 p-6 mb-8 border border-green-500/50 rounded-lg terminal-window relative overflow-hidden shadow-xl shadow-green-900/20">
+          <form onSubmit={handleScan} className="bg-black/90 p-4 md:p-6 mb-6 md:mb-8 border border-green-500/50 rounded-lg terminal-window relative overflow-hidden shadow-xl shadow-green-900/20">
             {/* Matrix rain effect */}
             <div className="absolute inset-0 pointer-events-none opacity-10 z-0">
               <div className="matrix-rain"></div>
@@ -283,14 +289,14 @@ const Dashboard = () => {
               </div>
             )}
             
-            <div className="flex flex-col md:flex-row gap-4 relative z-10">
-              <div className="flex-1 relative">
+            <div className="flex flex-col gap-4 relative z-10">
+              <div className="relative">
                 <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                   <LinkIcon className="h-5 w-5 text-green-500" />
                 </div>
                 <Input
                   type="text"
-                  placeholder="ENTER TARGET URL (e.g., https://example.com)"
+                  placeholder="ENTER TARGET URL (e.g., example.com)"
                   className="pl-10 pr-4 bg-black/80 text-green-400 border-green-500/50 font-mono focus:border-green-400 focus:ring-green-400 placeholder:text-green-700/50 h-12 shadow-lg shadow-green-900/20"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
@@ -301,7 +307,7 @@ const Dashboard = () => {
               <Button 
                 type="submit"
                 disabled={scanning || !url}
-                className="bg-green-600 hover:bg-green-700 text-black font-bold whitespace-nowrap flex items-center gap-2 transition-colors font-mono cyber-button h-12 px-8"
+                className="bg-green-600 hover:bg-green-700 text-black font-bold whitespace-nowrap flex items-center gap-2 transition-colors font-mono cyber-button h-12"
               >
                 {scanning ? (
                   <div className="h-4 w-4 border-2 border-t-transparent border-black rounded-full animate-spin"></div>
@@ -313,11 +319,11 @@ const Dashboard = () => {
             </div>
             
             {scanning && (
-              <div className="mt-8 animate-fade-in">
+              <div className="mt-6 animate-fade-in">
                 <div className="flex justify-between text-xs text-green-400 mb-2 font-mono">
                   <span className="flex items-center">
                     <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
-                    SCANNING TARGET FOR SECURITY VULNERABILITIES
+                    SCANNING TARGET
                   </span>
                   <span>{Math.round(scanProgress)}%</span>
                 </div>
@@ -327,19 +333,19 @@ const Dashboard = () => {
                   indicatorClassName="bg-gradient-to-r from-green-600 to-green-400 shadow-glow" 
                 />
                 
-                <div className="mt-6 bg-black/80 p-5 rounded-lg border border-green-500/30">
+                <div className="mt-6 bg-black/80 p-4 rounded-lg border border-green-500/30">
                   <h3 className="text-green-400 font-mono font-bold mb-4 text-lg flex items-center">
                     <Shield className="mr-2 h-5 w-5 text-green-500" />
                     SECURITY SCAN PROGRESS
                   </h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="border border-green-600/30 rounded p-4 bg-green-950/20">
-                      <h4 className="text-green-400 font-mono text-sm mb-3">DOMAIN ANALYSIS</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="border border-green-600/30 rounded p-3 bg-green-950/20">
+                      <h4 className="text-green-400 font-mono text-sm mb-2">DOMAIN ANALYSIS</h4>
                       <div className="space-y-3">
                         <div>
                           <div className="flex justify-between mb-1 text-xs text-green-500">
-                            <span>Domain Reputation Scan</span>
+                            <span>Domain Reputation</span>
                             <span>{Math.min(100, scanProgress * 1.2)}%</span>
                           </div>
                           <div className="h-1.5 bg-green-950/50 rounded-full overflow-hidden">
@@ -352,7 +358,7 @@ const Dashboard = () => {
                         
                         <div>
                           <div className="flex justify-between mb-1 text-xs text-green-500">
-                            <span>URL Structure Analysis</span>
+                            <span>URL Structure</span>
                             <span>{Math.min(100, scanProgress * 1.4)}%</span>
                           </div>
                           <div className="h-1.5 bg-green-950/50 rounded-full overflow-hidden">
@@ -362,28 +368,15 @@ const Dashboard = () => {
                             ></div>
                           </div>
                         </div>
-                        
-                        <div>
-                          <div className="flex justify-between mb-1 text-xs text-green-500">
-                            <span>WHOIS Intelligence</span>
-                            <span>{Math.min(100, scanProgress * 1.1)}%</span>
-                          </div>
-                          <div className="h-1.5 bg-green-950/50 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-green-500 rounded-full transition-all duration-300" 
-                              style={{ width: `${Math.min(100, scanProgress * 1.1)}%` }}
-                            ></div>
-                          </div>
-                        </div>
                       </div>
                     </div>
                     
-                    <div className="border border-green-600/30 rounded p-4 bg-green-950/20">
-                      <h4 className="text-green-400 font-mono text-sm mb-3">CONNECTION SECURITY</h4>
+                    <div className="border border-green-600/30 rounded p-3 bg-green-950/20">
+                      <h4 className="text-green-400 font-mono text-sm mb-2">SECURITY ANALYSIS</h4>
                       <div className="space-y-3">
                         <div>
                           <div className="flex justify-between mb-1 text-xs text-green-500">
-                            <span>SSL Certificate Verification</span>
+                            <span>SSL Certificate</span>
                             <span>{Math.min(100, scanProgress * 0.9)}%</span>
                           </div>
                           <div className="h-1.5 bg-green-950/50 rounded-full overflow-hidden">
@@ -396,20 +389,7 @@ const Dashboard = () => {
                         
                         <div>
                           <div className="flex justify-between mb-1 text-xs text-green-500">
-                            <span>Redirect Chain Analysis</span>
-                            <span>{Math.min(100, scanProgress * 0.8)}%</span>
-                          </div>
-                          <div className="h-1.5 bg-green-950/50 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-green-500 rounded-full transition-all duration-300" 
-                              style={{ width: `${Math.min(100, scanProgress * 0.8)}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <div className="flex justify-between mb-1 text-xs text-green-500">
-                            <span>Host IP Reputation</span>
+                            <span>AI Analysis</span>
                             <span>{Math.min(100, scanProgress * 0.7)}%</span>
                           </div>
                           <div className="h-1.5 bg-green-950/50 rounded-full overflow-hidden">
@@ -421,48 +401,15 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </div>
-                    
-                    <div className="border border-green-600/30 rounded p-4 bg-green-950/20 md:col-span-2">
-                      <h4 className="text-green-400 font-mono text-sm mb-3">ADVANCED THREAT ANALYSIS</h4>
-                      <div className="space-y-3">
-                        <div>
-                          <div className="flex justify-between mb-1 text-xs text-green-500">
-                            <span>Machine Learning Classification</span>
-                            <span>{Math.min(100, scanProgress * 0.6)}%</span>
-                          </div>
-                          <div className="h-1.5 bg-green-950/50 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-green-500 rounded-full transition-all duration-300" 
-                              style={{ width: `${Math.min(100, scanProgress * 0.6)}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <div className="flex justify-between mb-1 text-xs text-green-500">
-                            <span>Phishing Pattern Detection</span>
-                            <span>{Math.min(100, scanProgress * 0.5)}%</span>
-                          </div>
-                          <div className="h-1.5 bg-green-950/50 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-green-500 rounded-full transition-all duration-300" 
-                              style={{ width: `${Math.min(100, scanProgress * 0.5)}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                   
-                  <div className="mt-4 font-mono text-xs text-green-500/70 h-20 overflow-hidden scanner-logs">
+                  <div className="mt-3 font-mono text-xs text-green-500/70 h-16 overflow-hidden scanner-logs">
                     <div className="animate-slide-up">
                       {scanProgress > 10 && <p>[SYSTEM] Resolving domain name...</p>}
                       {scanProgress > 25 && <p>[SYSTEM] Checking SSL certificate status...</p>}
                       {scanProgress > 40 && <p>[SYSTEM] Analyzing URL structure for suspicious patterns...</p>}
-                      {scanProgress > 55 && <p>[SYSTEM] Examining domain registration information...</p>}
-                      {scanProgress > 70 && <p>[SYSTEM] Checking redirect chain behavior...</p>}
-                      {scanProgress > 80 && <p>[SYSTEM] Analyzing hosting IP reputation...</p>}
-                      {scanProgress > 90 && <p>[SYSTEM] Running ML classification algorithms...</p>}
+                      {scanProgress > 55 && <p>[SYSTEM] Running AI model classification...</p>}
+                      {scanProgress > 70 && <p>[SYSTEM] Calculating security score...</p>}
                     </div>
                   </div>
                 </div>
@@ -471,9 +418,10 @@ const Dashboard = () => {
           </form>
           
           {scanResult && (
-            <div className="bg-black/90 p-6 mb-8 rounded-lg border border-green-500/50 terminal-window animate-fade-in shadow-xl shadow-green-900/30">
-              <div className="flex flex-col md:flex-row items-start gap-8">
-                <div className="relative h-40 w-40 md:h-48 md:w-48 flex-shrink-0 mx-auto md:mx-0">
+            <div className="bg-black/90 p-4 md:p-6 mb-6 md:mb-8 rounded-lg border border-green-500/50 terminal-window animate-fade-in shadow-xl shadow-green-900/30">
+              <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
+                {/* Security Score Circle */}
+                <div className="relative h-32 w-32 md:h-40 md:w-40 flex-shrink-0 mx-auto md:mx-0">
                   <div className="absolute inset-0 grid-pattern rounded-full opacity-20"></div>
                   <svg viewBox="0 0 100 100" className="h-full w-full transform -rotate-90">
                     <circle 
@@ -493,15 +441,16 @@ const Dashboard = () => {
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <span className="text-3xl md:text-5xl font-bold text-green-400 font-mono">{Math.round(scanResult.overallScore)}</span>
+                    <span className="text-2xl md:text-4xl font-bold text-green-400 font-mono">{Math.round(scanResult.overallScore)}</span>
                     <span className="text-xs text-green-500/80 font-mono">SECURITY SCORE</span>
                   </div>
                 </div>
                 
-                <div className="flex-1 space-y-6 mt-4 md:mt-0">
+                {/* Results Summary */}
+                <div className="flex-1 space-y-4 md:space-y-6 w-full">
                   <div>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
-                      <h3 className="text-xl md:text-2xl font-bold text-green-400 font-mono">SECURITY ASSESSMENT</h3>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+                      <h3 className="text-xl font-bold text-green-400 font-mono">SECURITY ASSESSMENT</h3>
                       {scanResult.isSafe ? (
                         <span className="bg-green-900/40 text-green-400 border border-green-500/50 px-3 py-1 rounded-sm text-sm font-mono flex items-center gap-1 w-fit">
                           <Check className="h-4 w-4" /> SECURE
@@ -513,13 +462,13 @@ const Dashboard = () => {
                       )}
                     </div>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <div className="flex items-start gap-2">
                         <LinkIcon className="h-5 w-5 text-green-500 mt-0.5" />
-                        <div>
+                        <div className="flex-1 overflow-hidden">
                           <span className="text-sm text-green-500/80 font-mono">TARGET URL:</span>
-                          <div className="flex items-center gap-2">
-                            <p className="text-green-400 break-all font-mono">{scanResult.url}</p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-green-400 break-all font-mono text-sm">{scanResult.url}</p>
                             <a 
                               href={scanResult.url} 
                               target="_blank" 
@@ -544,7 +493,7 @@ const Dashboard = () => {
                   
                   {/* Factor Results Grid */}
                   <div>
-                    <h4 className="text-green-400 font-medium mb-4 flex items-center gap-2 font-mono">
+                    <h4 className="text-green-400 font-medium mb-3 flex items-center gap-2 font-mono">
                       <Database className="h-5 w-5 text-green-500" /> SECURITY FACTOR ANALYSIS
                     </h4>
                     
@@ -575,7 +524,7 @@ const Dashboard = () => {
               </div>
               
               {scanResult.threats && scanResult.threats.length > 0 && (
-                <div className="mt-8 p-4 bg-red-900/20 rounded-sm border border-red-500/30">
+                <div className="mt-6 p-4 bg-red-900/20 rounded-sm border border-red-500/30">
                   <h4 className="text-red-400 font-medium mb-3 flex items-center gap-2 font-mono">
                     <AlertTriangle className="h-5 w-5 text-red-500" /> SECURITY VULNERABILITIES
                   </h4>
@@ -590,94 +539,8 @@ const Dashboard = () => {
                 </div>
               )}
               
-              {/* Advanced Details */}
-              <div className="mt-8">
-                <h4 className="text-green-400 font-medium mb-4 flex items-center gap-2 font-mono">
-                  <Code className="h-5 w-5 text-green-500" /> DETAILED SECURITY ANALYSIS
-                </h4>
-                
-                <div className="border border-green-500/30 rounded-sm overflow-hidden">
-                  <div className="bg-green-900/20 px-4 py-2 border-b border-green-500/30">
-                    <ul className="flex">
-                      <li className="mr-8 text-green-400 font-mono text-sm flex items-center">
-                        <Network className="h-4 w-4 mr-1 text-green-500" />
-                        <span>Domain: <span className="text-white font-bold">{scanResult.domain}</span></span>
-                      </li>
-                      <li className="mr-8 text-green-400 font-mono text-sm flex items-center">
-                        <span>Age: <span className="text-white font-bold">{scanResult.factorResults?.whoisInfo?.domainAge || 'Unknown'} years</span></span>
-                      </li>
-                      <li className="mr-8 text-green-400 font-mono text-sm flex items-center">
-                        {scanResult.factorResults?.sslCertificate?.valid ? (
-                          <>
-                            <Lock className="h-4 w-4 mr-1 text-green-500" />
-                            <span>HTTPS: <span className="text-green-300">Secure</span></span>
-                          </>
-                        ) : (
-                          <>
-                            <AlertTriangle className="h-4 w-4 mr-1 text-yellow-500" />
-                            <span>HTTP: <span className="text-yellow-300">Insecure</span></span>
-                          </>
-                        )}
-                      </li>
-                    </ul>
-                  </div>
-                  
-                  <div className="p-4 bg-black/40">
-                    <div className="space-y-4">
-                      {scanResult.factorResults?.mlClassification && (
-                        <div className="bg-green-950/30 p-3 border border-green-500/20 rounded-sm">
-                          <h5 className="text-green-400 font-mono text-sm mb-2">ML CLASSIFICATION</h5>
-                          <div className="flex items-center mb-1">
-                            <span className="text-sm font-mono text-green-500 w-64">Confidence Score:</span>
-                            <span className="text-green-400 font-mono">{scanResult.factorResults.mlClassification.mlConfidence}%</span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="text-sm font-mono text-green-500 w-64">Prediction:</span>
-                            <span className={`font-mono ${scanResult.factorResults.mlClassification.prediction === 'Likely Safe' ? 'text-green-400' : 'text-red-400'}`}>
-                              {scanResult.factorResults.mlClassification.prediction}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {scanResult.factorResults?.redirectBehavior && (
-                        <div className="bg-green-950/30 p-3 border border-green-500/20 rounded-sm">
-                          <h5 className="text-green-400 font-mono text-sm mb-2">REDIRECT BEHAVIOR</h5>
-                          <div className="flex items-center mb-1">
-                            <span className="text-sm font-mono text-green-500 w-64">Redirect Count:</span>
-                            <span className="text-green-400 font-mono">{scanResult.factorResults.redirectBehavior.redirectCount}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="text-sm font-mono text-green-500 w-64">Forced Download:</span>
-                            <span className={`font-mono ${!scanResult.factorResults.redirectBehavior.hasForceDownload ? 'text-green-400' : 'text-red-400'}`}>
-                              {scanResult.factorResults.redirectBehavior.hasForceDownload ? 'Detected (High Risk)' : 'None Detected (Low Risk)'}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {scanResult.factorResults?.ipReputation && (
-                        <div className="bg-green-950/30 p-3 border border-green-500/20 rounded-sm">
-                          <h5 className="text-green-400 font-mono text-sm mb-2">SERVER INFORMATION</h5>
-                          <div className="flex items-center mb-1">
-                            <span className="text-sm font-mono text-green-500 w-64">IP Address:</span>
-                            <span className="text-green-400 font-mono">{scanResult.factorResults.ipReputation.ipAddress}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="text-sm font-mono text-green-500 w-64">IP Reputation:</span>
-                            <span className={`font-mono ${scanResult.factorResults.ipReputation.isClean ? 'text-green-400' : 'text-red-400'}`}>
-                              {scanResult.factorResults.ipReputation.isClean ? 'Clean (Low Risk)' : 'Suspicious (High Risk)'}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
               {/* Safety recommendation */}
-              <div className={`mt-8 p-4 rounded-sm border ${scanResult.isSafe ? 
+              <div className={`mt-6 p-4 rounded-sm border ${scanResult.isSafe ? 
                 'bg-green-900/20 border-green-500/30 text-green-400' : 
                 'bg-red-900/20 border-red-500/30 text-red-400'}`}>
                 <h4 className="font-medium flex items-center gap-2 mb-2 font-mono">
@@ -697,96 +560,84 @@ const Dashboard = () => {
                     `This URL exhibits ${scanResult.threats.length} security risk indicators with a threat score of ${100-scanResult.overallScore}/100. System recommends avoiding this resource to maintain security integrity.`
                   }
                 </p>
-                
-                <div className="mt-4 p-3 bg-black/40 border border-green-500/20 rounded-sm">
-                  <h5 className="text-green-400 font-mono text-sm mb-2 flex items-center">
-                    <Shield className="h-4 w-4 mr-1 text-green-500" /> RECOMMENDATIONS
-                  </h5>
-                  <ul className="space-y-1.5">
-                    {scanResult.isSafe ? (
-                      <>
-                        <li className="text-sm font-mono text-green-400 flex items-start">
-                          <ChevronRight className="h-4 w-4 mr-1 flex-shrink-0 mt-0.5" />
-                          Standard security practices recommended
-                        </li>
-                        <li className="text-sm font-mono text-green-400 flex items-start">
-                          <ChevronRight className="h-4 w-4 mr-1 flex-shrink-0 mt-0.5" />
-                          Continue with normal browsing activities
-                        </li>
-                      </>
-                    ) : (
-                      <>
-                        <li className="text-sm font-mono text-red-400 flex items-start">
-                          <ChevronRight className="h-4 w-4 mr-1 flex-shrink-0 mt-0.5" />
-                          Avoid entering any personal information on this site
-                        </li>
-                        <li className="text-sm font-mono text-red-400 flex items-start">
-                          <ChevronRight className="h-4 w-4 mr-1 flex-shrink-0 mt-0.5" />
-                          Do not download any files from this domain
-                        </li>
-                        <li className="text-sm font-mono text-red-400 flex items-start">
-                          <ChevronRight className="h-4 w-4 mr-1 flex-shrink-0 mt-0.5" />
-                          Consider blocking this domain in your security software
-                        </li>
-                      </>
-                    )}
-                  </ul>
-                </div>
               </div>
               
-              <div className="mt-6 flex justify-end">
+              <div className="mt-5 flex justify-end">
                 <Button 
                   onClick={resetScan}
                   className="bg-green-800/30 text-green-400 border border-green-500/50 hover:bg-green-800/50 font-mono"
                 >
                   <FileCode className="h-4 w-4 mr-2" />
-                  INITIATE NEW SCAN
+                  SCAN NEW URL
                 </Button>
               </div>
             </div>
           )}
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-10">
-            <Card className="bg-black/80 p-6 flex flex-col items-center text-center border border-green-500/30 rounded-lg hover:border-green-500/50 transition-all terminal-window shadow-lg shadow-green-900/20">
-              <div className="bg-green-900/30 p-3 rounded-md mb-4 border border-green-500/30">
-                <Shield className="h-7 w-7 text-green-400 animate-pulse-glow" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+            <Card className="bg-black/80 p-5 flex flex-col items-center text-center border border-green-500/30 rounded-lg hover:border-green-500/50 transition-all terminal-window shadow-lg shadow-green-900/20">
+              <div className="bg-green-900/30 p-3 rounded-md mb-3 border border-green-500/30">
+                <Shield className="h-6 w-6 text-green-400 animate-pulse-glow" />
               </div>
-              <h3 className="text-lg font-medium text-green-400 mb-2 font-mono">ADVANCED PROTECTION</h3>
+              <h3 className="text-lg font-medium text-green-400 mb-2 font-mono">PHISHING PROTECTION</h3>
               <p className="text-green-300/80 text-sm font-mono">
-                Neural scanning algorithms continuously adapt to identify emergent phishing vectors and zero-day exploits.
+                Detect sophisticated phishing attempts targeting your personal information.
               </p>
             </Card>
             
-            <Card className="bg-black/80 p-6 flex flex-col items-center text-center border border-green-500/30 rounded-lg hover:border-green-500/50 transition-all terminal-window shadow-lg shadow-green-900/20">
-              <div className="bg-green-900/30 p-3 rounded-md mb-4 border border-green-500/30">
-                <Network className="h-7 w-7 text-green-400 animate-pulse-glow" />
+            <Card className="bg-black/80 p-5 flex flex-col items-center text-center border border-green-500/30 rounded-lg hover:border-green-500/50 transition-all terminal-window shadow-lg shadow-green-900/20">
+              <div className="bg-green-900/30 p-3 rounded-md mb-3 border border-green-500/30">
+                <Network className="h-6 w-6 text-green-400 animate-pulse-glow" />
               </div>
-              <h3 className="text-lg font-medium text-green-400 mb-2 font-mono">THREAT INTELLIGENCE</h3>
+              <h3 className="text-lg font-medium text-green-400 mb-2 font-mono">AI POWERED</h3>
               <p className="text-green-300/80 text-sm font-mono">
-                Deep analysis of domain architecture, certificate validation, and network behavior pattern recognition.
+                Advanced machine learning algorithms detect even the most subtle phishing patterns.
               </p>
             </Card>
             
-            <Card className="bg-black/80 p-6 flex flex-col items-center text-center border border-green-500/30 rounded-lg hover:border-green-500/50 transition-all terminal-window shadow-lg shadow-green-900/20">
-              <div className="bg-green-900/30 p-3 rounded-md mb-4 border border-green-500/30">
-                <Lock className="h-7 w-7 text-green-400 animate-pulse-glow" />
+            <Card className="bg-black/80 p-5 flex flex-col items-center text-center border border-green-500/30 rounded-lg hover:border-green-500/50 transition-all terminal-window shadow-lg shadow-green-900/20">
+              <div className="bg-green-900/30 p-3 rounded-md mb-3 border border-green-500/30">
+                <Lock className="h-6 w-6 text-green-400 animate-pulse-glow" />
               </div>
-              <h3 className="text-lg font-medium text-green-400 mb-2 font-mono">SECURITY PROTOCOLS</h3>
+              <h3 className="text-lg font-medium text-green-400 mb-2 font-mono">DETAILED REPORTS</h3>
               <p className="text-green-300/80 text-sm font-mono">
-                Identifies sophisticated attack vectors including credential harvesting, social engineering, and network exploits.
+                Get comprehensive security analysis with actionable safety recommendations.
               </p>
             </Card>
           </div>
         </div>
       </main>
       
-      <footer className="border-t border-green-500/20 py-6 mt-20">
+      <footer className="border-t border-green-500/20 py-4 mt-10 md:mt-20">
         <div className="container mx-auto px-4 text-center">
           <p className="text-green-500/50 text-sm font-mono">
-            CYBERSENTRY v3.0 // ADVANCED SECURITY PROTOCOL // {new Date().getFullYear()}
+            PHISHGUARD v1.0 // ADVANCED SECURITY PROTOCOL // {new Date().getFullYear()}
           </p>
         </div>
       </footer>
+      
+      {/* Add mobile-specific CSS */}
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .matrix-bg {
+            background-attachment: scroll;
+          }
+          
+          .terminal-window {
+            border-width: 1px;
+          }
+          
+          .pulse-highlight {
+            animation: pulse 2s infinite;
+          }
+          
+          @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+          }
+        }
+      `}</style>
     </div>
   );
 };

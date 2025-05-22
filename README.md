@@ -1,5 +1,5 @@
 
-# PhishGuard - Phishing Link Detector
+# PhishGuard - AI-Powered Phishing Link Detector
 
 ![PhishGuard](https://img.shields.io/badge/PhishGuard-Cyber%20Security-blue)
 
@@ -7,20 +7,33 @@ PhishGuard is a sophisticated web-based cybersecurity tool designed to detect an
 
 ## 🔒 Features
 
-- **URL Threat Detection**: Analyze URLs for phishing attempts and security risks
-- **Security Scoring**: Get a safety score out of 100 for any analyzed URL
-- **Threat Identification**: Detailed breakdown of detected security issues
-- **Domain Analysis**: Information about domain age, SSL status, and redirects
+- **AI-Powered URL Analysis**: Advanced machine learning algorithms detect phishing attempts
+- **Consistent Security Scoring**: Reliable and repeatable security assessments
+- **Multi-Vector Security Analysis**: Comprehensive checking across multiple security dimensions
+- **Mobile-Responsive Design**: Fully functional on all device sizes
 - **User Authentication**: Secure login and registration system
-- **Responsive Interface**: Professional dark-themed UI optimized for all devices
+- **Cybersecurity Interface**: Professional dark-themed UI with cyber aesthetics
 
 ## 🛠️ Technology Stack
 
 - **Frontend**: React, TypeScript, TailwindCSS, shadcn/ui
+- **Backend**: Supabase Edge Functions
+- **Authentication**: Supabase Auth
 - **State Management**: React Context API, React Query
-- **Authentication**: Supabase Auth (implementation ready)
 - **Styling**: Custom cybersecurity-themed UI with animations
 - **Notifications**: Toast notifications for user feedback
+
+## 🔍 URL Analysis Methodology
+
+PhishGuard scans URLs using multiple security vectors:
+
+1. **Domain Reputation** - Checks against known safe and malicious domains
+2. **URL Structure Analysis** - Detects suspicious patterns in URL formation
+3. **SSL Certificate Verification** - Ensures proper encryption protocols
+4. **WHOIS Information** - Examines domain registration details and age
+5. **Redirect Behavior Analysis** - Checks for suspicious redirects or forced downloads
+6. **IP Reputation** - Evaluates the reputation of the hosting server
+7. **ML Classification** - AI model prediction based on URL characteristics
 
 ## 🚀 Getting Started
 
@@ -55,23 +68,24 @@ PhishGuard is a sophisticated web-based cybersecurity tool designed to detect an
 
 ## 🔧 Supabase Integration
 
-PhishGuard is designed to work with Supabase for authentication and data storage. To connect your Supabase database:
+PhishGuard uses Supabase for authentication and edge functions:
 
 1. Create a Supabase project at [https://supabase.com](https://supabase.com)
-2. Set up authentication in your Supabase project
-3. Connect your Supabase project to PhishGuard:
+2. Connect your Supabase project to PhishGuard:
    - Click on the Supabase button in the Lovable interface
    - Connect to your Supabase project
    - Follow the integration steps
 
 ### Database Schema
 
-Create the following tables in your Supabase project:
-
 **Users Table** (handled automatically by Supabase Auth)
 - id: uuid (primary key)
 - email: text
 - created_at: timestamp
+
+**Profiles Table**
+- id: uuid (primary key, references users.id)
+- username: text
 
 **Scan History Table**
 - id: uuid (primary key)
@@ -79,23 +93,23 @@ Create the following tables in your Supabase project:
 - url: text
 - score: integer
 - threats: json
+- is_safe: boolean
 - scanned_at: timestamp
 
-## 📱 Interface
+## 📱 Key UI Features
 
-PhishGuard features a professional dark-themed interface designed specifically for cybersecurity applications:
-
-- **Login/Register**: Secure authentication screens
-- **Dashboard**: URL scanning interface with real-time analysis
-- **Results View**: Detailed breakdown of scan results with visual indicators
-- **Mobile Responsive**: Fully functional on all device sizes
+- **Responsive Design**: Fully functional across all device sizes
+- **Username Highlighting**: Prominent display of user identity
+- **Real-time Scan Visualization**: Dynamic feedback during scan process
+- **Detailed Security Reports**: Comprehensive breakdown of security factors
+- **Cybersecurity Aesthetics**: Terminal-inspired security interface
 
 ## 🔐 Security Notes
 
-- All URL scanning is performed securely
-- No sensitive user data is stored
-- Password requirements enforce strong security practices
-- The application includes anti-phishing education elements
+- All URL scanning is performed securely via edge functions
+- Consistent security scoring for reliable results
+- Enhanced AI model for accurate threat detection
+- Mobile-friendly security interface
 
 ## 📄 License
 
